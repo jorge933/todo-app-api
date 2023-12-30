@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import { User } from 'src/schemas/user.schema';
+import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
 
 @Injectable()
@@ -53,7 +53,7 @@ export class AuthService {
     return { id };
   }
 
-  async sla(userId: string) {
+  async findOne(userId: string) {
     return await this.userModel.findOne({ _id: userId });
   }
 }

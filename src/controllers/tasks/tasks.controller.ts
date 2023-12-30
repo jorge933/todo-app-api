@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
-import { Types } from 'mongoose';
 import { GetUserId } from 'src/modules/auth/decorators/get-user';
 import { CreateTaskDto } from 'src/services/tasks/create-task.dto';
 import { TasksService } from 'src/services/tasks/tasks.service';
@@ -21,7 +20,6 @@ export class TasksController {
 
   @Delete()
   delete(@GetUserId() userId: string, @Body() { id }: { id: string }) {
-    console.log(typeof id);
     const tasks = this.tasksService.delete(userId, id);
     return tasks;
   }
