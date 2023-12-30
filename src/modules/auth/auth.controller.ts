@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { IsPublic } from './decorators/is-public-route';
-import { LoginUserDto } from './dto/login.dto';
 import { GetUserId } from './decorators/get-user';
+import { IsPublic } from './decorators/is-public-route';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,15 +13,16 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @Put()
+  @Post()
   @IsPublic()
   async createUser(@Body() newUser: CreateUserDto) {
+    console.log(newUser);
     const user = await this.userService.create(newUser);
     const token = this.jwtService.sign(user);
     return token;
   }
 
-  @Post()
+  @Post('login')
   @IsPublic()
   async login(@Body() credentials: LoginUserDto) {
     const user = await this.userService.login(credentials);
@@ -31,7 +32,7 @@ export class AuthController {
 
   @Get()
   test(@GetUserId() userId: string) {
-    const user = this.userService.sla(userId);
+    const user = this.userService.findOne(userId);
     return user;
   }
 }

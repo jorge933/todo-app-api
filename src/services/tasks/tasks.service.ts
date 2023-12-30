@@ -15,21 +15,32 @@ export class TasksService {
 
   async create(userId: string, { name }: CreateTaskDto) {
     const uuid = new Types.UUID();
-    await this.userModel.updateOne(
-      {
-        _id: userId,
-      },
-      {
-        $push: { tasks: { name, _id: uuid } },
-      },
-    );
+    await this.userModel
+      .updateOne(
+        {
+          _id: userId,
+        },
+        {
+          $push: { tasks: { name, _id: uuid } },
+        },
+      )
+      .exec();
 
     return uuid;
   }
 
   async delete(userId: string, id: string) {
-    return await this.userModel.findOneAndDelete({
-      _id: id,
-    });
+    await this.userModel
+      .updateOne(
+        {
+          _id: new Types.ObjectId(userId),
+        },
+        {
+          $pull: { tasks: { _id: new Types.UUID(id) } },
+        },
+      )
+      .exec();
+
+    return id;
   }
 }
