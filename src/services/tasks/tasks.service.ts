@@ -14,18 +14,19 @@ export class TasksService {
   }
 
   async create(userId: string, { name }: CreateTaskDto) {
-    const result = await this.userModel
+    const uuid = new Types.UUID();
+    await this.userModel
       .updateOne(
         {
           _id: userId,
         },
         {
-          $push: { tasks: { name, _id: new Types.UUID() } },
+          $push: { tasks: { name, _id: uuid } },
         },
       )
-      .getUpdate();
+      .exec();
 
-    return result['$push']['tasks'];
+    return uuid;
   }
 
   async delete(userId: string, id: string) {
