@@ -16,7 +16,6 @@ export class AuthController {
   @Post()
   @IsPublic()
   async createUser(@Body() newUser: CreateUserDto) {
-    const a = new Date();
     const user = await this.authService.create(newUser);
 
     if (!user) return;

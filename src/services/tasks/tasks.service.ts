@@ -1,36 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { User } from 'src/schemas/user.schema';
+import { Task } from 'src/schemas/task.schema';
 import { CreateTaskDto } from './create-task.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(Task.name) private taskModel: Model<Task>) {}
 
   async getAll(userId: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    return user.tasks;
+    const user = await this.taskModel.find({
+      owner: new Types.ObjectId(userId),
+    });
+
+    return user;
   }
 
   async create(userId: string, { name }: CreateTaskDto) {
-    const uuid = new Types.UUID();
-    await this.userModel
-      .updateOne(
-        {
-          _id: userId,
-        },
-        {
-          $push: { tasks: { name, _id: uuid } },
-        },
-      )
-      .exec();
+    const task = new this.taskModel({
+      name,
+      owner: new Types.ObjectId(userId),
+    });
 
-    return uuid;
+    task.save();
+
+    return task._id;
   }
 
   async delete(userId: string, id: string) {
-    const a = await this.userModel
+    await this.taskModel
       .updateOne(
         {
           _id: new Types.ObjectId(userId),
@@ -40,7 +38,5 @@ export class TasksService {
         },
       )
       .exec();
-
-    return a;
   }
 }

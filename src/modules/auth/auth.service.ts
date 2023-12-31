@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
@@ -33,7 +33,6 @@ export class AuthService {
     const userCreated = new this.userModel({
       ...user,
       password,
-      tasks: [],
     });
 
     userCreated.save();
@@ -60,6 +59,8 @@ export class AuthService {
     }
 
     const id = user._id.toString();
+
+    this.userModel.aggregate()
 
     return { id };
   }

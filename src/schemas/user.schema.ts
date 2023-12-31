@@ -20,8 +20,8 @@ export class User {
   @Prop({ type: String, required: true })
   password: string;
 
-  @Prop({ type: Types.DocumentArray, required: true })
-  tasks: Types.DocumentArray<Task>;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }] })
+  tasks?: Types.DocumentArray<Task>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

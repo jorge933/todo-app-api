@@ -10,15 +10,15 @@ import { TasksController } from './controllers/tasks/tasks.controller';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './schemas/user.schema';
-import { TasksService } from './services/tasks/tasks.service';
+import { Task, TaskSchema } from './schemas/task.schema';
 import { DomainErrorsService } from './services/domain-errors/domain-errors.service';
+import { TasksService } from './services/tasks/tasks.service';
 
 @Module({
   imports: [
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
     MongooseModule.forRoot(process.env.DB_URI),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
