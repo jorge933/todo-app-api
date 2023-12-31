@@ -7,11 +7,12 @@ import { AuthModule } from './modules/auth/auth.module';
 
 import { TasksController } from './controllers/tasks/tasks.controller';
 
-import { TasksService } from './services/tasks/tasks.service';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
+import { TasksService } from './services/tasks/tasks.service';
+import { DomainErrorsService } from './services/domain-errors/domain-errors.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { User, UserSchema } from './schemas/user.schema';
       useClass: JwtAuthGuard,
     },
     TasksService,
+    DomainErrorsService,
   ],
 })
 export class AppModule {}

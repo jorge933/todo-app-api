@@ -5,30 +5,42 @@ import { Model } from 'mongoose';
 import { User } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
+import { DomainErrorsService } from 'src/services/domain-errors/domain-errors.service';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly domainErrorsService: DomainErrorsService,
+  ) {}
 
   async create(user: CreateUserDto) {
+    const existUser = await this.userModel
+      .findOne({
+        $or: [{ email: user.email }, { username: user.username }],
+      })
+      .exec();
+
+    if (existUser) {
+      this.domainErrorsService.addError({
+        message: 'Estas Credenciais já foram registradas no banco!',
+      });
+      return;
+    }
+
     const password = await bcrypt.hash(user.password, 10);
 
-    try {
-      const userCreated = await this.userModel.create({
-        ...user,
-        password,
-        tasks: [],
-      });
+    const userCreated = new this.userModel({
+      ...user,
+      password,
+      tasks: [],
+    });
 
-      const id = userCreated._id.toString();
+    userCreated.save();
 
-      return { id };
-    } catch (error) {
-      throw new HttpException(
-        'Essas credenciais já foram registradas no banco!',
-        HttpStatus.CONFLICT,
-      );
-    }
+    const id = userCreated._id.toString();
+
+    return { id };
   }
 
   async login(credentials: LoginUserDto) {
@@ -42,18 +54,13 @@ export class AuthService {
     );
 
     const invalidCredentials = !user || !equalPasswords;
-    if (invalidCredentials)
-      throw new HttpException(
-        'Credenciais inválidas!',
-        HttpStatus.UNAUTHORIZED,
-      );
+
+    if (invalidCredentials) {
+      this.domainErrorsService.addError({ message: 'Credenciais inválidas!' });
+    }
 
     const id = user._id.toString();
 
     return { id };
-  }
-
-  async findOne(userId: string) {
-    return await this.userModel.findOne({ _id: userId });
   }
 }

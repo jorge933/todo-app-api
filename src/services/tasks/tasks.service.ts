@@ -30,7 +30,7 @@ export class TasksService {
   }
 
   async delete(userId: string, id: string) {
-    await this.userModel
+    const a = await this.userModel
       .updateOne(
         {
           _id: new Types.ObjectId(userId),
@@ -41,6 +41,6 @@ export class TasksService {
       )
       .exec();
 
-    return id;
+    return a;
   }
 }

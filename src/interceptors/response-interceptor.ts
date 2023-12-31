@@ -8,12 +8,32 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import {
+  DomainErrorsService,
+  Error,
+} from 'src/services/domain-errors/domain-errors.service';
+
+interface HttpReturn {
+  message: string;
+  status: number;
+  success: boolean;
+}
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
+  constructor(private readonly domainErrorService: DomainErrorsService) {}
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
+        const errors = this.domainErrorService.errors;
+        const hasErrors = errors.length;
+        if (hasErrors) {
+          this.errorHandler(this.domainErrorService.errors, context);
+          this.domainErrorService.cleanErrors();
+          return;
+        }
+
         return this.responseHandler(res, context);
       }),
       catchError((err: HttpException) => {
@@ -22,25 +42,26 @@ export class ResponseInterceptor implements NestInterceptor {
     );
   }
 
-  errorHandler(exception: HttpException, context: ExecutionContext) {
+  errorHandler(exception: HttpException | Error[], context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    let error: HttpReturn | Error[];
+    let status: number;
 
-    return response.status(status).json({
-      statusCode: status,
-      ...(exception instanceof Array
-        ? { message: exception }
-        : { message: exception.message }),
-      ...(exception instanceof HttpException
-        ? { data: exception.getResponse() }
-        : {}),
-      success: false,
-    });
+    if (exception instanceof HttpException) {
+      (status = exception.getStatus()),
+        (error = {
+          status,
+          message: exception.message,
+          success: false,
+        });
+    } else {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      error = exception;
+    }
+
+    return response.status(status).json(error);
   }
   responseHandler(res: any, context: ExecutionContext) {
     const ctx = context.switchToHttp();
@@ -54,5 +75,5 @@ export class ResponseInterceptor implements NestInterceptor {
       data: res,
       success: true,
     };
-  } //a
+  }
 }
