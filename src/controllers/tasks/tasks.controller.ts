@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { GetUserId } from 'src/modules/auth/decorators/get-user';
 import { CreateTaskDto } from 'src/services/tasks/create-task.dto';
 import { TasksService } from 'src/services/tasks/tasks.service';
@@ -12,7 +12,7 @@ export class TasksController {
     return tasks;
   }
 
-  @Put()
+  @Post('create')
   create(@GetUserId() userId: string, @Body() newTask: CreateTaskDto) {
     const tasks = this.tasksService.create(userId, newTask);
     return tasks;
