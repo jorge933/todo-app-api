@@ -29,7 +29,10 @@ export class TasksService {
     return task._id;
   }
 
-  async delete(id: string) {
-    return await this.taskRepository.deleteOne({ _id: new Types.ObjectId(id) });
+  async delete(userId: string, id: string) {
+    return await this.taskRepository.deleteOne({
+      _id: new Types.ObjectId(id),
+      owner: new Types.ObjectId(userId),
+    });
   }
 }
