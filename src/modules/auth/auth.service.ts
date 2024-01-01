@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
-import { User } from 'src/schemas/user.schema';
+import { UserRepository } from 'src/repositories/user/user.repository';
+import { DomainErrorsService } from 'src/services/domain-errors/domain-errors.service';
+import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
-import { DomainErrorsService } from 'src/services/domain-errors/domain-errors.service';
 
 @Injectable()
 export class AuthService {
+  userRepository: UserRepository;
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    private unitOfWork: UnitOfWorkService,
     private readonly domainErrorsService: DomainErrorsService,
   ) {}
 
   async create(user: CreateUserDto) {
-    const existUser = await this.userModel
-      .findOne({
-        $or: [{ email: user.email }, { username: user.username }],
-      })
-      .exec();
+    const existUser = await this.unitOfWork.userRepository.findOne({
+      $or: [{ email: user.email }, { username: user.username }],
+    });
 
     if (existUser) {
       this.domainErrorsService.addError({
@@ -30,12 +28,10 @@ export class AuthService {
 
     const password = await bcrypt.hash(user.password, 10);
 
-    const userCreated = new this.userModel({
+    const userCreated = await this.unitOfWork.userRepository.create({
       ...user,
       password,
     });
-
-    userCreated.save();
 
     const id = userCreated._id.toString();
 
@@ -43,24 +39,22 @@ export class AuthService {
   }
 
   async login(credentials: LoginUserDto) {
-    const user = await this.userModel.findOne({
+    const user = await this.unitOfWork.userRepository.findOne({
       $or: [{ email: credentials.login }, { username: credentials.login }],
     });
 
-    const equalPasswords = await bcrypt.compare(
-      credentials.password,
-      user?.password,
-    );
+    const pass = user?.password ?? '';
+
+    const equalPasswords = await bcrypt.compare(credentials.password, pass);
 
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
       this.domainErrorsService.addError({ message: 'Credenciais inválidas!' });
+      return;
     }
 
     const id = user._id.toString();
-
-    this.userModel.aggregate()
 
     return { id };
   }

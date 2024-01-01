@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, ObjectId, Types } from 'mongoose';
 
-export interface Task {
+interface Task {
   _id?: ObjectId;
   name: string;
 }

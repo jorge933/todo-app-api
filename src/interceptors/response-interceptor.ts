@@ -29,7 +29,7 @@ export class ResponseInterceptor implements NestInterceptor {
         const errors = this.domainErrorService.errors;
         const hasErrors = errors.length;
         if (hasErrors) {
-          this.errorHandler(this.domainErrorService.errors, context);
+          this.errorHandler(errors, context);
           this.domainErrorService.cleanErrors();
           return;
         }

@@ -10,7 +10,9 @@ import { TasksController } from './controllers/tasks/tasks.controller';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Task, TaskSchema } from './schemas/task.schema';
+
+import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
+
 import { DomainErrorsService } from './services/domain-errors/domain-errors.service';
 import { TasksService } from './services/tasks/tasks.service';
 
@@ -18,12 +20,12 @@ import { TasksService } from './services/tasks/tasks.service';
   imports: [
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
     MongooseModule.forRoot(process.env.DB_URI),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '10d' },
     }),
+    UnitOfWorkModule,
   ],
   controllers: [TasksController],
   providers: [
