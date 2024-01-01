@@ -9,10 +9,4 @@ export class TasksRepository extends BaseRepository<Task> {
   constructor(@InjectModel(Task.name) public taskModel: Model<Task>) {
     super(taskModel);
   }
-
-  async find(expression: FilterQuery<Task>) {
-    const result = await this.model.find(expression);
-
-    return result;
-  }
 }
