@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { TasksRepository } from 'src/repositories/tasks/tasks.repository';
-import { UserRepository } from 'src/repositories/user/user.repository';
+import { TasksRepository } from '../../repositories/tasks/tasks.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 
 import { UnitOfWorkService } from './unit-of-work.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/schemas/user.schema';
-import { Task, TaskSchema } from 'src/schemas/task.schema';
+import { User, UserSchema } from '../../schemas/user.schema';
+import { Task, TaskSchema } from '../../schemas/task.schema';
 
 @Module({
   imports: [

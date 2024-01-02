@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import {
   DomainErrorsService,
   Error,
-} from 'src/services/domain-errors/domain-errors.service';
+} from '../services/domain-errors/domain-errors.service';
 
 interface HttpReturn {
   message: string;

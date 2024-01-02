@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from 'src/repositories/user/user.repository';
-import { DomainErrorsService } from 'src/services/domain-errors/domain-errors.service';
+import { UserRepository } from '../../repositories/user/user.repository';
+import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';

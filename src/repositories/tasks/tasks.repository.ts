@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Task } from 'src/schemas/task.schema';
+import { Task } from '../../schemas/task.schema';
 import { BaseRepository } from '../base/base.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';

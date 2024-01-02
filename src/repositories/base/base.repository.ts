@@ -7,7 +7,6 @@ import {
   QueryOptions,
   UpdateQuery,
 } from 'mongoose';
-import { Task } from 'src/schemas/task.schema';
 
 export class BaseRepository<T> {
   entityToPopulate: PopulateOptions;

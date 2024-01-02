@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { TasksRepository } from 'src/repositories/tasks/tasks.repository';
+import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { CreateTaskDto } from './create-task.dto';
 

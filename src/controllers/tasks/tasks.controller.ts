@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
-import { GetUserId } from 'src/modules/auth/decorators/get-user';
-import { CreateTaskDto } from 'src/services/tasks/create-task.dto';
-import { TasksService } from 'src/services/tasks/tasks.service';
+import { GetUserId } from '../../modules/auth/decorators/get-user';
+import { CreateTaskDto } from '../../services/tasks/create-task.dto';
+import { TasksService } from '../../services/tasks/tasks.service';
 
 @Controller('tasks')
 export class TasksController {
