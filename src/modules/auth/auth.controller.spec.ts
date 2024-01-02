@@ -17,12 +17,10 @@ fdescribe('AuthController', () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-        MongooseModule.forRoot(process.env.DB_URI),
         JwtModule.register({
           secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '10d' },
         }),
-        UnitOfWorkModule,
       ],
       controllers: [AuthController],
       providers: [
