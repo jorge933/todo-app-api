@@ -7,19 +7,19 @@ import { TasksService } from '../../services/tasks/tasks.service';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
   @Get()
-  getAll(@GetUserId() userId: string) {
+  getAll(@GetUserId() userId: number) {
     const tasks = this.tasksService.getAll(userId);
     return tasks;
   }
 
   @Post('create')
-  create(@GetUserId() userId: string, @Body() newTask: CreateTaskDto) {
+  create(@GetUserId() userId: number, @Body() newTask: CreateTaskDto) {
     const tasks = this.tasksService.create(userId, newTask);
     return tasks;
   }
 
   @Delete()
-  delete(@GetUserId() userId: string, @Body() { id }: { id: string }) {
+  delete(@GetUserId() userId: number, @Body() { id }: { id: number }) {
     const tasks = this.tasksService.delete(userId, id);
     return tasks;
   }

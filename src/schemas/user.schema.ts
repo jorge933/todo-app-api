@@ -1,16 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, ObjectId, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 interface Task {
-  _id?: ObjectId;
+  _id?: number;
   name: string;
 }
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   collection: 'users',
+  autoIndex: true,
 })
 export class User {
+  @Prop({ type: Number, unique: true })
+  _id?: number;
+
   @Prop({ type: String, required: true, unique: true })
   username: string;
 
@@ -19,9 +23,6 @@ export class User {
 
   @Prop({ type: String, required: true })
   password: string;
-
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }] })
-  tasks?: Types.DocumentArray<Task>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

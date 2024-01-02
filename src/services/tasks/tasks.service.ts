@@ -12,27 +12,27 @@ export class TasksService {
     this.taskRepository = unitOfWork.tasksRepository;
   }
 
-  async getAll(userId: string) {
+  async getAll(userId: number) {
     const tasks = await this.taskRepository.find({
-      owner: new Types.ObjectId(userId),
+      owner: userId,
     });
 
     return tasks;
   }
 
-  async create(userId: string, { name }: CreateTaskDto) {
+  async create(userId: number, { name }: CreateTaskDto) {
     const task = await this.taskRepository.create({
       name,
-      owner: new Types.ObjectId(userId),
+      owner: userId,
     });
 
     return task._id;
   }
 
-  async delete(userId: string, id: string) {
+  async delete(userId: number, id: number) {
     return await this.taskRepository.deleteOne({
-      _id: new Types.ObjectId(id),
-      owner: new Types.ObjectId(userId),
+      _id: id,
+      owner: userId,
     });
   }
 }
