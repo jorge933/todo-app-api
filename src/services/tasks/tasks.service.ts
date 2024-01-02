@@ -13,11 +13,11 @@ export class TasksService {
   }
 
   async getAll(userId: string) {
-    const user = await this.taskRepository.find({
+    const tasks = await this.taskRepository.find({
       owner: new Types.ObjectId(userId),
     });
 
-    return user;
+    return tasks;
   }
 
   async create(userId: string, { name }: CreateTaskDto) {
