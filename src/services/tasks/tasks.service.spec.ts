@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
-import { ITask } from 'src/interfaces/task';
+import { ITask } from '../../interfaces/task';
 import { Types } from 'mongoose';
 import { CreateTaskDto } from './create-task.dto';
 
@@ -8,28 +8,29 @@ describe('TasksService', () => {
   let tasksService: TasksService;
 
   let tasks: ITask[] = [];
-  const owner = new Types.ObjectId().toString();
+  const owner = 1;
+  let idCounter: number;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: TasksService,
           useValue: {
-            getAll(userId: string) {
+            getAll(userId: number) {
               const tasksOfUser = tasks.filter((task) => task.owner === userId);
 
               return tasksOfUser;
             },
 
-            create(owner: string, { name }: CreateTaskDto) {
-              const id = new Types.ObjectId().toString();
-              const task = { _id: id, name, owner };
+            create(owner: number, { name }: CreateTaskDto) {
+              idCounter ? idCounter++ : (idCounter = 1);
+              const task = { _id: idCounter, name, owner };
               tasks.push(task);
 
-              return id;
+              return task._id;
             },
 
-            delete(userId: string, id: string) {
+            delete(userId: number, id: number) {
               const newTasksValue = tasks.filter((task) => {
                 const isTaskToRemove =
                   (task.owner === userId && task._id !== id) ||
@@ -53,18 +54,16 @@ describe('TasksService', () => {
       name: 'Work',
     };
 
-    const taskId = tasksService.create(owner, task);
+    tasksService.create(owner, task);
 
     expect(length + 1).toBe(tasks.length);
   });
 
   it('should return all tasks from user', () => {
-    const id = new Types.ObjectId().toString();
-    const userId = new Types.ObjectId().toString();
     tasks.push({
-      _id: id,
+      _id: ++idCounter,
       name: 'Read',
-      owner: userId,
+      owner: 2,
     });
 
     const userTasks = tasksService.getAll(owner) as unknown as ITask[];

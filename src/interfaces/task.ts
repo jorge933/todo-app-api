@@ -1,5 +1,5 @@
 export interface ITask {
-  _id: string;
+  _id: number;
   name: string;
-  owner: string;
+  owner: number;
 }
