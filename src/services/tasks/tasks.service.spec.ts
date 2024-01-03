@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { ITask } from '../../interfaces/task';
 import { Types } from 'mongoose';
-import { CreateTaskDto } from './create-task.dto';
+import { CreateTaskDto, EditTaskNameDto } from './task.dto';
 
 describe('TasksService', () => {
   let tasksService: TasksService;
@@ -40,6 +40,16 @@ describe('TasksService', () => {
 
               tasks = newTasksValue;
             },
+            editTaskName(userId: number, taskInfos: EditTaskNameDto) {
+              tasks.forEach((task, index) => {
+                const isTaskToEdit =
+                  task.owner === userId && task._id === taskInfos.id;
+
+                if (isTaskToEdit) {
+                  tasks[index].name = taskInfos.newName;
+                }
+              });
+            },
           },
         },
       ],
@@ -70,6 +80,15 @@ describe('TasksService', () => {
     const expectedUserTasks = [tasks[0]];
 
     expect(expectedUserTasks).toEqual(userTasks);
+  });
+
+  it('should edit task name', () => {
+    const editTaskNameDto = { id: 1, newName: 'Listen' };
+    tasksService.editTaskName(owner, editTaskNameDto);
+
+    const expectedName = editTaskNameDto.newName;
+    const newTaskName = tasks[0].name;
+    expect(expectedName).toBe(newTaskName);
   });
 
   it('should delete task', () => {

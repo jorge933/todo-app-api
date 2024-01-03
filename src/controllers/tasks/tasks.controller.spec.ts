@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
 import { ITask } from 'src/interfaces/task';
-import { CreateTaskDto } from '../../services/tasks/create-task.dto';
+import { CreateTaskDto, EditTaskNameDto } from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { TasksController } from './tasks.controller';
 
@@ -45,6 +44,17 @@ describe('TasksController', () => {
 
               tasks = newTasksValue;
             },
+
+            editTaskName(userId: number, taskInfos: EditTaskNameDto) {
+              tasks.forEach((task, index) => {
+                const isTaskToEdit =
+                  task.owner === userId && task._id === taskInfos.id;
+
+                if (isTaskToEdit) {
+                  tasks[index].name = taskInfos.newName;
+                }
+              });
+            },
           },
         },
       ],
@@ -59,7 +69,7 @@ describe('TasksController', () => {
       name: 'Work',
     };
 
-    const taskId = tasksController.create(owner, task);
+    tasksController.create(owner, task);
 
     expect(length + 1).toBe(tasks.length);
   });
@@ -75,6 +85,15 @@ describe('TasksController', () => {
     const expectedUserTasks = [tasks[0]];
 
     expect(expectedUserTasks).toEqual(userTasks);
+  });
+
+  it('should edit task name', () => {
+    const editTaskNameDto = { id: 1, newName: 'Listen' };
+    tasksController.editTaskName(owner, editTaskNameDto);
+
+    const expectedName = editTaskNameDto.newName;
+    const newTaskName = tasks[0].name;
+    expect(expectedName).toBe(newTaskName);
   });
 
   it('should delete task', () => {

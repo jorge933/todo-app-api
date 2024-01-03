@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
-import { CreateTaskDto } from './create-task.dto';
+import { CreateTaskDto, EditTaskNameDto } from './task.dto';
 
 @Injectable()
 export class TasksService {
@@ -33,5 +33,12 @@ export class TasksService {
       _id: id,
       owner: userId,
     });
+  }
+
+  async editTaskName(userId: number, taskInfos: EditTaskNameDto) {
+    return await this.taskRepository.updateOne(
+      { _id: taskInfos.id, owner: userId },
+      { $set: { name: taskInfos.newName } },
+    );
   }
 }

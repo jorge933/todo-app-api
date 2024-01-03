@@ -1,6 +1,10 @@
 import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
-import { CreateTaskDto } from '../../services/tasks/create-task.dto';
+import {
+  CreateTaskDto,
+  EditTaskNameDto,
+  DeleteTaskDto,
+} from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 
 @Controller('tasks')
@@ -19,8 +23,17 @@ export class TasksController {
   }
 
   @Delete()
-  delete(@GetUserId() userId: number, @Body() { id }: { id: number }) {
+  delete(@GetUserId() userId: number, @Body() { id }: DeleteTaskDto) {
     const tasks = this.tasksService.delete(userId, id);
+    return tasks;
+  }
+
+  @Post('edit')
+  editTaskName(
+    @GetUserId() userId: number,
+    @Body() taskInfos: EditTaskNameDto,
+  ) {
+    const tasks = this.tasksService.editTaskName(userId, taskInfos);
     return tasks;
   }
 }
