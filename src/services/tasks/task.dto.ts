@@ -23,14 +23,14 @@ export class DeleteTaskDto {
 export class EditTaskNameDto {
   @IsNotEmpty()
   @IsNumber()
-  id: number;
+  _id: number;
 
   @IsString()
   @MinLength(3)
   newName: string;
 
   constructor(id: number, newName: string) {
-    this.id = id;
+    this._id = id;
     this.newName = newName;
   }
 }

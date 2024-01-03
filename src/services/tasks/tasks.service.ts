@@ -4,6 +4,7 @@ import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.servi
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { DomainErrorsService } from '../domain-errors/domain-errors.service';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
+import { Pagination } from 'src/repositories/base/base.repository';
 @Injectable()
 export class TasksService {
   taskRepository: TasksRepository;
@@ -16,12 +17,13 @@ export class TasksService {
   }
 
   async getAll(userId: number, queryOptions?: QueryOptions) {
-    const tasks = await this.taskRepository.find(
-      { owner: userId },
+    const params = {
+      expression: { owner: userId },
       queryOptions,
-      'owner',
-      ['-password']
-    );
+      populate: 'owner',
+      select: ['-password'],
+    };
+    const tasks = await this.taskRepository.find(params);
 
     return tasks;
   }
@@ -37,14 +39,14 @@ export class TasksService {
 
   async delete(userId: number, id: number) {
     return await this.taskRepository.deleteOne({
-      _id: id,
+      id: id,
       owner: userId,
     });
   }
 
   async editTaskName(userId: number, taskInfos: EditTaskNameDto) {
     return await this.taskRepository.updateOne(
-      { _id: taskInfos.id, owner: userId },
+      { id: taskInfos._id, owner: userId },
       { $set: { name: taskInfos.newName } },
     );
   }

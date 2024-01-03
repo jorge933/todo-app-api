@@ -12,14 +12,21 @@ import { date } from 'src/helpers/date';
 import { like } from 'src/helpers/like';
 import { ITask } from 'src/interfaces/task';
 
+export interface Pagination {
+  page: number;
+  size: number;
+}
+
+interface FindAllParams<T> {
+  expression: FilterQuery<T>;
+  queryOptions?: QueryOptions;
+  populate?: string | string[];
+  select?: string | string[];
+  pagination?: Pagination;
+}
+
 export class BaseRepository<T> {
-  entityToPopulate: PopulateOptions;
-  constructor(
-    public model: Model<T>,
-    entityToPopulate?: PopulateOptions,
-  ) {
-    this.entityToPopulate = entityToPopulate;
-  }
+  constructor(public model: Model<T>) {}
 
   async create(entity: T) {
     const entityCreated = new this.model(entity) as Document<T>;
@@ -34,13 +41,10 @@ export class BaseRepository<T> {
     return result;
   }
 
-  async find(
-    expression: FilterQuery<T>,
-    { filter, sort }: QueryOptions,
-    populate?: string | string[],
-    select?: string | string[],
-  ) {
+  async find({ expression, queryOptions, populate, select }: FindAllParams<T>) {
     let filters = {};
+
+    const { filter, sort, page, size } = queryOptions;
 
     if (filter) {
       const transformedFilter = this.transformFilter(filter);
@@ -57,6 +61,11 @@ export class BaseRepository<T> {
       const sortTransformed = this.transformSort(sort);
       query.sort(sortTransformed);
     }
+
+    const skip = (page ?? 1) - 1;
+    const limit = size ?? 10;
+
+    query.skip(skip * limit).limit(size ?? 10);
 
     return query;
   }
