@@ -6,6 +6,7 @@ import {
   DeleteTaskDto,
 } from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
+import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
 
 export interface QueryOptions {
   sort?: string;
@@ -13,9 +14,13 @@ export interface QueryOptions {
 }
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    private unit: UnitOfWorkService,
+  ) {}
   @Get()
   getAll(@GetUserId() userId: number, @Query() filterOptions?: QueryOptions) {
+    this.unit.domainErrorsService.addError({ message: '123' });
     const tasks = this.tasksService.getAll(userId, filterOptions);
     return tasks;
   }

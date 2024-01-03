@@ -10,6 +10,7 @@ import * as AutoIncrementFactory from 'mongoose-sequence';
 import { Task, TaskSchema } from '../../schemas/task.schema';
 import { User, UserSchema } from '../../schemas/user.schema';
 
+import { DomainErrorsService } from './domain-errors/domain-errors.service';
 import { UnitOfWorkService } from './unit-of-work.service';
 
 @Module({
@@ -45,7 +46,17 @@ import { UnitOfWorkService } from './unit-of-work.service';
       },
     ]),
   ],
-  exports: [UnitOfWorkService, UserRepository, TasksRepository],
-  providers: [UnitOfWorkService, UserRepository, TasksRepository],
+  exports: [
+    UnitOfWorkService,
+    UserRepository,
+    TasksRepository,
+    DomainErrorsService,
+  ],
+  providers: [
+    UnitOfWorkService,
+    UserRepository,
+    TasksRepository,
+    DomainErrorsService,
+  ],
 })
 export class UnitOfWorkModule {}

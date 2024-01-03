@@ -13,7 +13,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
 
-import { DomainErrorsService } from './services/domain-errors/domain-errors.service';
 import { TasksService } from './services/tasks/tasks.service';
 
 @Module({
@@ -34,7 +33,6 @@ import { TasksService } from './services/tasks/tasks.service';
       useClass: JwtAuthGuard,
     },
     TasksService,
-    DomainErrorsService,
   ],
 })
 export class AppModule {}

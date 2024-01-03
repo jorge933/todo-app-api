@@ -3,7 +3,7 @@ import { ITask } from 'src/interfaces/task';
 import {
   CreateTaskDto,
   EditTaskNameDto,
-} from '../../services/domain-errors/task.dto';
+} from '../../modules/unit-of-work/domain-errors/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { TasksController } from './tasks.controller';
 

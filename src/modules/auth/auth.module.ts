@@ -8,7 +8,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { UnitOfWorkModule } from '../unit-of-work/unit-of-work.module';
 @Module({
   imports: [
@@ -21,6 +20,6 @@ import { UnitOfWorkModule } from '../unit-of-work/unit-of-work.module';
     UnitOfWorkModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, DomainErrorsService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

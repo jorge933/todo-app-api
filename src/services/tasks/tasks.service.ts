@@ -2,16 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { QueryOptions } from 'src/controllers/tasks/tasks.controller';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
-import { DomainErrorsService } from '../domain-errors/domain-errors.service';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
 @Injectable()
 export class TasksService {
   taskRepository: TasksRepository;
 
-  constructor(
-    private readonly unitOfWork: UnitOfWorkService,
-    private readonly domainErrorsService: DomainErrorsService,
-  ) {
+  constructor(private readonly unitOfWork: UnitOfWorkService) {
     this.taskRepository = unitOfWork.tasksRepository;
   }
 

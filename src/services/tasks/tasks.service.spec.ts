@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { ITask } from '../../interfaces/task';
 import { Types } from 'mongoose';
-import { CreateTaskDto, EditTaskNameDto } from '../domain-errors/task.dto';
+import {
+  CreateTaskDto,
+  EditTaskNameDto,
+} from '../../modules/unit-of-work/domain-errors/task.dto';
 
 describe('TasksService', () => {
   let tasksService: TasksService;

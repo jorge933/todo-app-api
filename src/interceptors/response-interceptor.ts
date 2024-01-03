@@ -8,10 +8,8 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {
-  DomainErrorsService,
-  Error,
-} from '../services/domain-errors/domain-errors.service';
+import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service';
+import { Error } from '../modules/unit-of-work/domain-errors/domain-errors.service';
 
 interface HttpReturn {
   message: string;
@@ -21,16 +19,16 @@ interface HttpReturn {
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  constructor(private readonly domainErrorService: DomainErrorsService) {}
+  constructor(private readonly unitOfWorkService: UnitOfWorkService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
-        const errors = this.domainErrorService.errors;
+        const { errors } = this.unitOfWorkService.domainErrorsService;
         const hasErrors = errors.length;
         if (hasErrors) {
-          this.errorHandler(errors, context);
-          this.domainErrorService.cleanErrors();
+          this.errorHandler(errors as Error[], context);
+          this.unitOfWorkService.domainErrorsService.cleanErrors();
           return;
         }
 
