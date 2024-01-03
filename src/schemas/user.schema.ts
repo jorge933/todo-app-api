@@ -6,6 +6,8 @@ export type UserDocument = HydratedDocument<User>;
 @Schema({
   collection: 'users',
   autoIndex: true,
+  versionKey: false,
+  timestamps: true,
 })
 export class User {
   @Prop({ type: Number, unique: true })

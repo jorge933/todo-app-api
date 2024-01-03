@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import {
   CreateTaskDto,
@@ -7,15 +7,16 @@ import {
 } from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 
+export interface QueryOptions {
+  sort?: string;
+  filter?: string;
+}
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
   @Get()
-  getAll(
-    @GetUserId() userId: number,
-    @Body() filterOptions?: { sort: string },
-  ) {
-    const tasks = this.tasksService.getAll(userId, filterOptions?.sort);
+  getAll(@GetUserId() userId: number, @Query() filterOptions?: QueryOptions) {
+    const tasks = this.tasksService.getAll(userId, filterOptions);
     return tasks;
   }
 

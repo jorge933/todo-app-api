@@ -6,6 +6,8 @@ export type TaskDocument = HydratedDocument<Task>;
 @Schema({
   collection: 'tasks',
   autoIndex: true,
+  versionKey: false,
+  timestamps: true,
 })
 export class Task {
   @Prop({ type: Number, unique: true })

@@ -1,39 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { QueryOptions } from 'src/controllers/tasks/tasks.controller';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
+import { DomainErrorsService } from '../domain-errors/domain-errors.service';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
-import { ITask } from 'src/interfaces/task';
-import { SortOrder } from 'mongoose';
-
-export type Sort = { [key: string]: SortOrder };
-
 @Injectable()
 export class TasksService {
   taskRepository: TasksRepository;
 
-  constructor(private unitOfWork: UnitOfWorkService) {
+  constructor(
+    private readonly unitOfWork: UnitOfWorkService,
+    private readonly domainErrorsService: DomainErrorsService,
+  ) {
     this.taskRepository = unitOfWork.tasksRepository;
   }
 
-  async getAll(userId: number, sort?: string) {
-    let sortTransformed: Sort;
-
-    if (sort) {
-      sort = sort.toLowerCase().replace(/sort=/i, '');
-
-      const [property, order] = sort.split(',') as [keyof ITask, SortOrder];
-
-      sortTransformed = {
-        [property]: order as SortOrder,
-      };
-      console.log(sortTransformed);
-    }
-
+  async getAll(userId: number, queryOptions?: QueryOptions) {
     const tasks = await this.taskRepository.find(
-      {
-        owner: userId,
-      },
-      sortTransformed,
+      { owner: userId },
+      queryOptions,
+      'owner',
+      ['-password']
     );
 
     return tasks;
