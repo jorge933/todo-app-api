@@ -10,7 +10,6 @@ export class DomainErrorsService {
 
   addError(error: Error) {
     this.errors.push(error);
-    return;
   }
 
   cleanErrors() {

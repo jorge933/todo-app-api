@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { ITask } from '../../interfaces/task';
 import { Types } from 'mongoose';
-import { CreateTaskDto, EditTaskNameDto } from './task.dto';
+import { CreateTaskDto, EditTaskNameDto } from '../domain-errors/task.dto';
 
 describe('TasksService', () => {
   let tasksService: TasksService;
@@ -83,7 +83,7 @@ describe('TasksService', () => {
   });
 
   it('should edit task name', () => {
-    const editTaskNameDto = { id: 1, newName: 'Listen' };
+    const editTaskNameDto = { _id: 1, newName: 'Listen' };
     tasksService.editTaskName(owner, editTaskNameDto);
 
     const expectedName = editTaskNameDto.newName;

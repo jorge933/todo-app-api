@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ITask } from 'src/interfaces/task';
-import { CreateTaskDto, EditTaskNameDto } from '../../services/tasks/task.dto';
+import {
+  CreateTaskDto,
+  EditTaskNameDto,
+} from '../../services/domain-errors/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { TasksController } from './tasks.controller';
 
@@ -88,7 +91,7 @@ describe('TasksController', () => {
   });
 
   it('should edit task name', () => {
-    const editTaskNameDto = { id: 1, newName: 'Listen' };
+    const editTaskNameDto = { _id: 1, newName: 'Listen' };
     tasksController.editTaskName(owner, editTaskNameDto);
 
     const expectedName = editTaskNameDto.newName;
@@ -99,7 +102,7 @@ describe('TasksController', () => {
   it('should delete task', () => {
     const { length } = tasks;
 
-    tasksController.delete(owner, { id: tasks[0]._id });
+    tasksController.delete(owner, { _id: tasks[0]._id });
 
     const expectedLength = length - 1;
     expect(expectedLength).toBe(tasks.length);

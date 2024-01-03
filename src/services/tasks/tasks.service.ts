@@ -4,7 +4,6 @@ import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.servi
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { DomainErrorsService } from '../domain-errors/domain-errors.service';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
-import { Pagination } from 'src/repositories/base/base.repository';
 @Injectable()
 export class TasksService {
   taskRepository: TasksRepository;
@@ -39,14 +38,14 @@ export class TasksService {
 
   async delete(userId: number, id: number) {
     return await this.taskRepository.deleteOne({
-      id: id,
+      id,
       owner: userId,
     });
   }
 
   async editTaskName(userId: number, taskInfos: EditTaskNameDto) {
     return await this.taskRepository.updateOne(
-      { id: taskInfos._id, owner: userId },
+      { _id: taskInfos.id, owner: userId },
       { $set: { name: taskInfos.newName } },
     );
   }

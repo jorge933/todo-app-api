@@ -30,12 +30,12 @@ fdescribe('AuthController', () => {
             create: jest
               .fn()
               .mockImplementation((user: CreateUserDto) =>
-                Promise.resolve({ id: new Types.ObjectId() }),
+                Promise.resolve({ _id: new Types.ObjectId() }),
               ),
             login: jest
               .fn()
               .mockImplementation((user: LoginUserDto) =>
-                Promise.resolve({ id: new Types.ObjectId() }),
+                Promise.resolve({ _id: new Types.ObjectId() }),
               ),
           },
         },
