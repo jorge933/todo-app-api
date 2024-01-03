@@ -14,6 +14,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
 
 import { TasksService } from './services/tasks/tasks.service';
+import { UserController } from './controllers/user/user.controller';
+import { UserService } from './services/user/user.service';
 
 @Module({
   imports: [
@@ -26,13 +28,14 @@ import { TasksService } from './services/tasks/tasks.service';
     }),
     UnitOfWorkModule,
   ],
-  controllers: [TasksController],
+  controllers: [TasksController, UserController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
     TasksService,
+    UserService,
   ],
 })
 export class AppModule {}
