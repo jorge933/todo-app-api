@@ -11,8 +11,11 @@ import { TasksService } from '../../services/tasks/tasks.service';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
   @Get()
-  getAll(@GetUserId() userId: number) {
-    const tasks = this.tasksService.getAll(userId);
+  getAll(
+    @GetUserId() userId: number,
+    @Body() filterOptions?: { sort: string },
+  ) {
+    const tasks = this.tasksService.getAll(userId, filterOptions?.sort);
     return tasks;
   }
 

@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
+import { ITask } from 'src/interfaces/task';
+import { SortOrder } from 'mongoose';
+
+export type Sort = { [key: string]: SortOrder };
 
 @Injectable()
 export class TasksService {
@@ -11,10 +15,26 @@ export class TasksService {
     this.taskRepository = unitOfWork.tasksRepository;
   }
 
-  async getAll(userId: number) {
-    const tasks = await this.taskRepository.find({
-      owner: userId,
-    });
+  async getAll(userId: number, sort?: string) {
+    let sortTransformed: Sort;
+
+    if (sort) {
+      sort = sort.toLowerCase().replace(/sort=/i, '');
+
+      const [property, order] = sort.split(',') as [keyof ITask, SortOrder];
+
+      sortTransformed = {
+        [property]: order as SortOrder,
+      };
+      console.log(sortTransformed);
+    }
+
+    const tasks = await this.taskRepository.find(
+      {
+        owner: userId,
+      },
+      sortTransformed,
+    );
 
     return tasks;
   }
