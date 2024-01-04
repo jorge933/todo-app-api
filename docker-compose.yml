@@ -9,6 +9,10 @@ services:
       - "mongo_data:/data/db"
     networks:
       - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 250M
   api: 
     build: .
     volumes:
@@ -16,13 +20,17 @@ services:
       - /app/node_modules
     ports:
       - ${APP_PORT}:${APP_PORT}
-    command: npm run start:dev
+    command: npm run start:prod
     env_file:
-      - /.env
+      - /.env.prod
     depends_on:
       - mongodb
     networks:
       - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 250M
 networks:
   app_network:
     driver: bridge
