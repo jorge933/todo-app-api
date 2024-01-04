@@ -6,8 +6,9 @@ import { UpdatePasswordDto } from 'src/controllers/user/update-credentials.dto';
 import * as bcrypt from 'bcrypt';
 
 interface CredentialUpdate {
-  email?: string;
-  username?: string;
+  email: string;
+  photo: string;
+  username: string;
 }
 
 @Injectable()
@@ -20,9 +21,10 @@ export class UserService {
     this.domainErrorsService = unitOfWork.domainErrorsService;
   }
 
-  async updateUserCredential<PropToOmit extends 'email' | 'username'>(
+  async updateUserCredential<PropToUpdate extends keyof CredentialUpdate>(
     userId: number,
-    credential: Omit<CredentialUpdate, PropToOmit>,
+    credential: Pick<CredentialUpdate, PropToUpdate>,
+    unique: boolean = true,
   ) {
     const [property] = Object.keys(credential);
 
@@ -33,7 +35,7 @@ export class UserService {
     const existUserWithCredential =
       await this.userRepository.findOne(newCredentialValue);
 
-    if (existUserWithCredential) {
+    if (existUserWithCredential && unique) {
       this.domainErrorsService.addError({
         message: `Este ${property} já foi registrado!`,
       });

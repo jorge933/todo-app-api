@@ -20,7 +20,7 @@ export class UserController {
     @GetUserId() userId: number,
     @Body() username: UpdateUsernameDto,
   ) {
-    return await this.userService.updateUserCredential<'email'>(
+    return await this.userService.updateUserCredential<'username'>(
       userId,
       username,
     );
@@ -31,10 +31,7 @@ export class UserController {
     @GetUserId() userId: number,
     @Body() email: UpdateEmailDto,
   ) {
-    return await this.userService.updateUserCredential<'username'>(
-      userId,
-      email,
-    );
+    return await this.userService.updateUserCredential<'email'>(userId, email);
   }
 
   @Post('change/password')
@@ -43,5 +40,17 @@ export class UserController {
     @Body() newPassword: UpdatePasswordDto,
   ) {
     return await this.userService.updatePassword(userId, newPassword);
+  }
+
+  @Post('change/photo')
+  async changePhoto(
+    @GetUserId() userId: number,
+    @Body() photo: { photo: string },
+  ) {
+    return await this.userService.updateUserCredential<'photo'>(
+      userId,
+      photo,
+      false,
+    );
   }
 }
