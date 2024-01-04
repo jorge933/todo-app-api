@@ -35,7 +35,7 @@ export class UserService {
 
     if (existUserWithCredential) {
       this.domainErrorsService.addError({
-        message: `Este ${property} já foi regristrado`,
+        message: `Este ${property} já foi registrado!`,
       });
       return;
     }
