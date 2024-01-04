@@ -34,7 +34,7 @@ export class TasksService {
 
   async delete(userId: number, id: number) {
     return await this.taskRepository.deleteOne({
-      id,
+      _id: id,
       owner: userId,
     });
   }

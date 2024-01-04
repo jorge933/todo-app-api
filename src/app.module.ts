@@ -20,12 +20,8 @@ import { UserService } from './services/user/user.service';
 @Module({
   imports: [
     AuthModule,
-    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.DB_URI),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '10d' },
-    }),
     UnitOfWorkModule,
   ],
   controllers: [TasksController, UserController],

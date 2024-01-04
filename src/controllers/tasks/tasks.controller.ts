@@ -20,7 +20,6 @@ export class TasksController {
   ) {}
   @Get()
   getAll(@GetUserId() userId: number, @Query() filterOptions?: QueryOptions) {
-    this.unit.domainErrorsService.addError({ message: '123' });
     const tasks = this.tasksService.getAll(userId, filterOptions);
     return tasks;
   }
