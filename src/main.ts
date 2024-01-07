@@ -5,7 +5,7 @@ import { PARAMS_VALIDATION_PIPE } from './pipes/validate-params/validate-params'
 import { UnitOfWorkService } from './modules/unit-of-work/unit-of-work.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.useGlobalInterceptors(
     new ResponseInterceptor(await app.resolve(UnitOfWorkService)),
