@@ -10,20 +10,8 @@ import {
 } from 'mongoose';
 import { date } from 'src/helpers/date';
 import { like } from 'src/helpers/like';
+import { FindAllParams } from 'src/interfaces/queries';
 import { ITask } from 'src/interfaces/task';
-
-export interface Pagination {
-  page: number;
-  size: number;
-}
-
-interface FindAllParams<T> {
-  expression: FilterQuery<T>;
-  queryOptions?: QueryOptions;
-  populate?: string | string[];
-  select?: string | string[];
-  pagination?: Pagination;
-}
 
 export class BaseRepository<T> {
   constructor(public model: Model<T>) {}

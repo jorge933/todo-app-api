@@ -1,8 +1,3 @@
-interface MessagesTranlated {
-  message: string;
-  translation: string;
-}
-
 export const MESSAGES_TRANSLATED: MessagesTranlated[] = [
   { message: 'or equal to', translation: 'ou igual a' },
   { message: 'shorter than', translation: 'menor' },
