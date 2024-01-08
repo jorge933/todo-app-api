@@ -4,11 +4,15 @@ import { UserRepository } from '../../repositories/user/user.repository';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   userRepository: UserRepository;
-  constructor(private unitOfWork: UnitOfWorkService) {}
+  constructor(
+    private readonly unitOfWork: UnitOfWorkService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async create(user: CreateUserDto) {
     const existUser = await this.unitOfWork.userRepository.findOne({
@@ -30,8 +34,11 @@ export class AuthService {
     });
 
     const id = userCreated._id.toString();
+    const token = this.generateToken(id);
+    const { username, email } = userCreated;
+    const userInfos = { username, email };
 
-    return { id };
+    return { token, user: userInfos };
   }
 
   async login(credentials: LoginUserDto) {
@@ -53,7 +60,15 @@ export class AuthService {
     }
 
     const id = user._id.toString();
+    const token = this.generateToken(id);
+    const { username, email, photo } = user;
+    const userInfos = { username, email, photo };
 
-    return { id };
+    return { token, user: userInfos };
+  }
+
+  private generateToken(id: string) {
+    const token = this.jwtService.sign({ id });
+    return token;
   }
 }

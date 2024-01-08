@@ -7,10 +7,7 @@ import { LoginUserDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
   @IsPublic()
@@ -30,10 +27,6 @@ export class AuthController {
   ) {
     const user = await this.authService[methodToCall](credentials);
 
-    if (!user?.id) return;
-
-    const token = this.jwtService.sign(user);
-
-    return token;
+    return user;
   }
 }
