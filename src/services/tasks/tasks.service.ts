@@ -15,8 +15,7 @@ export class TasksService {
     const params = {
       expression: { owner: userId },
       queryOptions,
-      populate: 'owner',
-      select: ['-password'],
+      select: ['-owner'],
     };
     const tasks = await this.taskRepository.find(params);
 
