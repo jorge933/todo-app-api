@@ -11,12 +11,6 @@ import { catchError, map } from 'rxjs/operators';
 import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service';
 import { Error } from '../modules/unit-of-work/domain-errors/domain-errors.service';
 
-interface HttpReturn {
-  message: string;
-  status: number;
-  success: boolean;
-}
-
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
   constructor(private readonly unitOfWorkService: UnitOfWorkService) {}
@@ -55,7 +49,7 @@ export class ResponseInterceptor implements NestInterceptor {
           success: false,
         });
     } else {
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      status = HttpStatus.FORBIDDEN;
       error = exception;
     }
 
