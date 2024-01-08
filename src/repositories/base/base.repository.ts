@@ -3,7 +3,7 @@ import {
   FilterQuery,
   HydratedDocument,
   Model,
-  PopulateOptions,
+  Query,
   QueryOptions,
   SortOrder,
   UpdateQuery,
@@ -44,7 +44,7 @@ export class BaseRepository<T> {
   async find({ expression, queryOptions, populate, select }: FindAllParams<T>) {
     let filters = {};
 
-    const { filter, sort, page, size } = queryOptions;
+    const { filter } = queryOptions;
 
     if (filter) {
       const transformedFilter = this.transformFilter(filter);
@@ -53,19 +53,7 @@ export class BaseRepository<T> {
 
     const query = this.model.find({ ...expression, ...filters });
 
-    if (populate) {
-      query.populate(populate, select);
-    }
-
-    if (sort) {
-      const sortTransformed = this.transformSort(sort);
-      query.sort(sortTransformed);
-    }
-
-    const skip = (page ?? 1) - 1;
-    const limit = size ?? 10;
-
-    query.skip(skip * limit).limit(size ?? 10);
+    this.executeQueryMethods(query, { ...queryOptions, populate, select });
 
     return query;
   }
@@ -106,5 +94,28 @@ export class BaseRepository<T> {
         : (filterOptions[property] = like(start));
     });
     return filterOptions;
+  }
+
+  private executeQueryMethods(
+    query: Query<unknown, unknown, unknown, unknown>,
+    { sort, page, size, populate, select }: any,
+  ) {
+    if (populate) {
+      query.populate(populate, select);
+    }
+
+    if (select) {
+      query.select(select);
+    }
+
+    if (sort) {
+      const sortTransformed = this.transformSort(sort);
+      query.sort(sortTransformed);
+    }
+
+    const skip = (page ?? 1) - 1;
+    const limit = size ?? 10;
+
+    query.skip(skip * limit).limit(size ?? 10);
   }
 }
