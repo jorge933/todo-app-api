@@ -8,14 +8,19 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from '../decorators/is-public-route';
+import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
+import { Error } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  constructor(
+    private reflector: Reflector,
+    private readonly unitOfWork: UnitOfWorkService,
+  ) {
     super();
   }
 
-  canActivate(context: ExecutionContext): Promise<boolean> | boolean {
+  canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -30,12 +35,14 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const canActivatePromise = canActivate as Promise<boolean>;
+    const ctx = context.switchToHttp();
+    const response = ctx.getResponse();
 
     return canActivatePromise.catch(() => {
-      throw new HttpException(
-        'Não está logado na aplicação',
-        HttpStatus.UNAUTHORIZED,
-      );
+      const error: Error = {
+        message: 'O usuário não está logado na aplicação',
+      };
+      return response.status(HttpStatus.FORBIDDEN).json(error);
     });
   }
 }
