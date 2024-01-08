@@ -12,7 +12,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @Post('create-user')
+  @Post('signup')
   @IsPublic()
   async createUser(@Body() newUser: CreateUserDto) {
     return await this.authenticate('create', newUser);
