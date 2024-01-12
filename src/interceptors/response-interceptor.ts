@@ -9,17 +9,24 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service';
-import { Error } from '../modules/unit-of-work/domain-errors/domain-errors.service';
+import {
+  DomainErrorsService,
+  Error,
+} from '../modules/unit-of-work/domain-errors/domain-errors.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  constructor(private readonly unitOfWorkService: UnitOfWorkService) {}
+  private domainErrorsService: DomainErrorsService;
+
+  constructor(private readonly unitOfWorkService: UnitOfWorkService) {
+    this.domainErrorsService = unitOfWorkService.domainErrorsService;
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
-        const { errors } = this.unitOfWorkService.domainErrorsService;
-        const hasErrors = !!errors;
+        const { errors } = this.domainErrorsService;
+        const hasErrors = !!errors.length;
         if (hasErrors) {
           this.errorHandler(errors as Error[], context);
           this.unitOfWorkService.domainErrorsService.cleanErrors();
@@ -38,7 +45,6 @@ export class ResponseInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
-    let errors;
     let error: HttpReturn | Error[];
     let status: number;
 
@@ -50,7 +56,7 @@ export class ResponseInterceptor implements NestInterceptor {
           success: false,
         });
     } else {
-      status = HttpStatus.FORBIDDEN;
+      status = this.domainErrorsService.status ?? HttpStatus.FORBIDDEN;
       error = exception;
     }
 

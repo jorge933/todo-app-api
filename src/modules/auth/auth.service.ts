@@ -5,6 +5,7 @@ import { UserRepository } from '../../repositories/user/user.repository';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
+import { HttpTypeErrors } from 'src/enums/http-type-errors';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +21,13 @@ export class AuthService {
     });
 
     if (existUser) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Estas Credenciais já foram registradas no banco!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        {
+          message: 'Estas Credenciais já foram registradas no banco!',
+          type: HttpTypeErrors.ALREADY_BEEN_REGISTERED,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 
@@ -53,9 +58,13 @@ export class AuthService {
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Credenciais inválidas!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        {
+          message: 'Credenciais inválidas!',
+          type: HttpTypeErrors.INVALID_CREDENTIALS,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 

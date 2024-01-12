@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UpdatePasswordDto } from 'src/controllers/user/update-credentials.dto';
 import { DomainErrorsService } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
 import { UserRepository } from 'src/repositories/user/user.repository';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
+import { HttpTypeErrors } from 'src/enums/http-type-errors';
 
 interface CredentialUpdate {
   email: string;
@@ -36,9 +37,13 @@ export class UserService {
       await this.userRepository.findOne(newCredentialValue);
 
     if (existUserWithCredential && unique) {
-      this.domainErrorsService.addError({
-        message: `Este ${property} já foi registrado!`,
-      });
+      this.domainErrorsService.addError(
+        {
+          message: `Este ${property} já foi registrado!`,
+          type: HttpTypeErrors.ALREADY_BEEN_REGISTERED,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 
@@ -62,9 +67,13 @@ export class UserService {
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Senha incorreta!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        {
+          message: 'Senha incorreta!',
+          type: HttpTypeErrors.INVALID_CREDENTIALS,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 
