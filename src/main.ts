@@ -14,6 +14,6 @@ async function bootstrap() {
     new ResponseInterceptor(await app.resolve(UnitOfWorkService)),
   );
   app.useGlobalPipes(PARAMS_VALIDATION_PIPE);
-  await app.listen(3000);
+  await app.listen(process.env.APP_PORT);
 }
 bootstrap();
