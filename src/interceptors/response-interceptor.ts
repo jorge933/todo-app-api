@@ -42,26 +42,27 @@ export class ResponseInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
-    let errors: string;
+    let errors;
     let type: string;
-    let status: HttpStatus;
+    let statusCode: HttpStatus;
 
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
+      statusCode = exception.getStatus();
       errors = exception.message;
     } else {
       type = this.domainErrorsService.type;
-      status = this.domainErrorsService.status;
-      errors = this.domainErrorsService.error;
+      statusCode = this.domainErrorsService.status || 500;
+      errors = this.domainErrorsService.error || exception;
     }
 
-    return response.status(status).json({
+    return response.status(statusCode).json({
       type,
       error: errors,
-      statusCode: status,
+      statusCode,
       success: false,
     });
   }
+
   responseHandler(res: any, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
