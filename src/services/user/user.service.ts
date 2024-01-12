@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { UserRepository } from 'src/repositories/user/user.repository';
 import { DomainErrorsService } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
 import { UpdatePasswordDto } from 'src/controllers/user/update-credentials.dto';
 import * as bcrypt from 'bcrypt';
+import { HttpErrors } from 'src/enums/http-erros.enum';
 
 interface CredentialUpdate {
   email: string;
@@ -36,9 +37,11 @@ export class UserService {
       await this.userRepository.findOne(newCredentialValue);
 
     if (existUserWithCredential && unique) {
-      this.domainErrorsService.addError({
-        message: `Este ${property} já foi registrado!`,
-      });
+      this.domainErrorsService.addError(
+        `Este ${property} já foi registrado!`,
+        HttpErrors.INVALID_CREDENTIALS,
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 
@@ -53,13 +56,6 @@ export class UserService {
     userId: number,
     { password, newPassword }: UpdatePasswordDto,
   ) {
-    if (password === newPassword) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'As senhas não podem ser iguais!',
-      });
-      return;
-    }
-
     const user = await this.userRepository.findOne({ _id: userId });
 
     const pass = user?.password ?? '';
@@ -69,9 +65,11 @@ export class UserService {
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Senha incorreta!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        'Senha incorreta!',
+        HttpErrors.INVALID_CREDENTIALS,
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 

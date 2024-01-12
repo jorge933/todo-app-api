@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from '../decorators/is-public-route';
 import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
-import { Error } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
+import { HttpErrors } from 'src/enums/http-erros.enum';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -39,10 +39,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const response = ctx.getResponse();
 
     return canActivatePromise.catch(() => {
-      const error: Error = {
-        message: 'O usuário não está logado na aplicação',
-      };
-      return response.status(HttpStatus.FORBIDDEN).json(error);
+      return response.status(HttpStatus.FORBIDDEN).json({
+        error: 'O usuário não está logado na aplicação',
+        type: HttpErrors.NOT_LOGGED,
+        statusCode: HttpStatus.FORBIDDEN,
+        success: false,
+      });
     });
   }
 }

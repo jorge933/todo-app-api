@@ -9,19 +9,23 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service';
-import { Error } from '../modules/unit-of-work/domain-errors/domain-errors.service';
+import { DomainErrorsService } from '../modules/unit-of-work/domain-errors/domain-errors.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  constructor(private readonly unitOfWorkService: UnitOfWorkService) {}
+  domainErrorsService: DomainErrorsService;
+
+  constructor(private readonly unitOfWorkService: UnitOfWorkService) {
+    this.domainErrorsService = unitOfWorkService.domainErrorsService;
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
-        const { errors } = this.unitOfWorkService.domainErrorsService;
+        const { error: errors } = this.unitOfWorkService.domainErrorsService;
         const hasErrors = errors.length;
         if (hasErrors) {
-          this.errorHandler(errors as Error[], context);
+          this.errorHandler(errors, context);
           this.unitOfWorkService.domainErrorsService.cleanErrors();
           return;
         }
@@ -34,26 +38,29 @@ export class ResponseInterceptor implements NestInterceptor {
     );
   }
 
-  errorHandler(exception: HttpException | Error[], context: ExecutionContext) {
+  errorHandler(exception: HttpException | string, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
-    let error: HttpReturn | Error[];
-    let status: number;
+    let errors: string;
+    let type: string;
+    let status: HttpStatus;
 
     if (exception instanceof HttpException) {
-      (status = exception.getStatus()),
-        (error = {
-          status,
-          message: exception.message,
-          success: false,
-        });
+      status = exception.getStatus();
+      errors = exception.message;
     } else {
-      status = HttpStatus.FORBIDDEN;
-      error = exception;
+      type = this.domainErrorsService.type;
+      status = this.domainErrorsService.status;
+      errors = this.domainErrorsService.error;
     }
 
-    return response.status(status).json(error);
+    return response.status(status).json({
+      type,
+      error: errors,
+      statusCode: status,
+      success: false,
+    });
   }
   responseHandler(res: any, context: ExecutionContext) {
     const ctx = context.switchToHttp();

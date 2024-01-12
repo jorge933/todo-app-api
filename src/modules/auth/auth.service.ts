@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { HttpErrors } from 'src/enums/http-erros.enum';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +21,11 @@ export class AuthService {
     });
 
     if (existUser) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Estas Credenciais já foram registradas no banco!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        'Estas Credenciais já foram registradas no banco!',
+        HttpErrors.ALREADY_BEEN_REGISTERED,
+        HttpStatus.UNAUTHORIZED,
+      );
       return;
     }
 
@@ -53,9 +56,11 @@ export class AuthService {
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
-      this.unitOfWork.domainErrorsService.addError({
-        message: 'Credenciais inválidas!',
-      });
+      this.unitOfWork.domainErrorsService.addError(
+        'Credenciais inválidas!',
+        HttpErrors.INVALID_CREDENTIALS,
+        HttpStatus.FORBIDDEN,
+      );
       return;
     }
 
