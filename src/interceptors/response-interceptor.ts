@@ -22,8 +22,8 @@ export class ResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
-        const { error: errors } = this.unitOfWorkService.domainErrorsService;
-        const hasErrors = errors.length;
+        const { error: errors } = this.domainErrorsService;
+        const hasErrors = !!errors;
         if (hasErrors) {
           this.errorHandler(errors, context);
           this.unitOfWorkService.domainErrorsService.cleanErrors();
@@ -52,7 +52,7 @@ export class ResponseInterceptor implements NestInterceptor {
     } else {
       type = this.domainErrorsService.type;
       statusCode = this.domainErrorsService.status || 500;
-      errors = this.domainErrorsService.error || exception;
+      errors = this.domainErrorsService.error ?? null;
     }
 
     return response.status(statusCode).json({
