@@ -1,20 +1,17 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+export interface Error {
+  message: string;
+}
 
 @Injectable()
 export class DomainErrorsService {
-  error: string;
-  type: string;
-  status: HttpStatus | null;
+  errors: Error[] = [];
 
-  addError(error: string, type: string, status: HttpStatus) {
-    this.type = type;
-    this.status = status;
-    this.error = error;
+  addError(error: Error) {
+    this.errors.push(error);
   }
 
   cleanErrors() {
-    this.error = '';
-    this.type = '';
-    this.status = null;
+    this.errors = [];
   }
 }

@@ -9,23 +9,19 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service';
-import { DomainErrorsService } from '../modules/unit-of-work/domain-errors/domain-errors.service';
+import { Error } from '../modules/unit-of-work/domain-errors/domain-errors.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  domainErrorsService: DomainErrorsService;
-
-  constructor(private readonly unitOfWorkService: UnitOfWorkService) {
-    this.domainErrorsService = unitOfWorkService.domainErrorsService;
-  }
+  constructor(private readonly unitOfWorkService: UnitOfWorkService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((res: unknown) => {
-        const { error: errors } = this.domainErrorsService;
+        const { errors } = this.unitOfWorkService.domainErrorsService;
         const hasErrors = !!errors;
         if (hasErrors) {
-          this.errorHandler(errors, context);
+          this.errorHandler(errors as Error[], context);
           this.unitOfWorkService.domainErrorsService.cleanErrors();
           return;
         }
@@ -38,29 +34,27 @@ export class ResponseInterceptor implements NestInterceptor {
     );
   }
 
-  errorHandler(exception: HttpException | string, context: ExecutionContext) {
+  errorHandler(exception: HttpException | Error[], context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
     let errors;
-    let type: string;
-    let statusCode: HttpStatus;
+    let error: HttpReturn | Error[];
+    let status: number;
 
     if (exception instanceof HttpException) {
-      statusCode = exception.getStatus();
-      errors = exception.message;
+      (status = exception.getStatus()),
+        (error = {
+          status,
+          message: exception.message,
+          success: false,
+        });
     } else {
-      type = this.domainErrorsService.type;
-      statusCode = this.domainErrorsService.status || 500;
-      errors = this.domainErrorsService.error ?? null;
+      status = HttpStatus.FORBIDDEN;
+      error = exception;
     }
 
-    return response.status(statusCode).json({
-      type,
-      error: errors,
-      statusCode,
-      success: false,
-    });
+    return response.status(status).json(error);
   }
 
   responseHandler(res: any, context: ExecutionContext) {
