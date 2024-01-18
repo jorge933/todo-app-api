@@ -16,8 +16,11 @@ export class AuthService {
   ) {}
 
   async create(user: CreateUserDto) {
+    const email = user.email.toLowerCase();
+    const username = user.username.toLowerCase();
+
     const existUser = await this.unitOfWork.userRepository.findOne({
-      $or: [{ email: user.email }, { username: user.username }],
+      $or: [{ email: email }, { username: username }],
     });
 
     if (existUser) {
@@ -34,21 +37,24 @@ export class AuthService {
     const password = await bcrypt.hash(user.password, 10);
 
     const userCreated = await this.unitOfWork.userRepository.create({
-      ...user,
+      email,
+      username,
       password,
     });
 
     const id = userCreated._id.toString();
     const token = this.generateToken(id);
-    const { username, email } = userCreated;
+
     const userInfos = { username, email };
 
     return { token, user: userInfos };
   }
 
   async login(credentials: LoginUserDto) {
+    const login = credentials.login.toLowerCase();
+
     const user = await this.unitOfWork.userRepository.findOne({
-      $or: [{ email: credentials.login }, { username: credentials.login }],
+      $or: [{ email: login }, { username: login }],
     });
 
     const pass = user?.password ?? '';
