@@ -28,7 +28,7 @@ export class TasksService {
       owner: userId,
     });
 
-    return task._id;
+    return task;
   }
 
   async delete(userId: number, id: number) {
