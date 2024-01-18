@@ -26,7 +26,8 @@ export class EditTaskNameDto {
   id: number;
 
   @IsString()
-  @MinLength(3)
+  @MinLength(1)
+  @MinLength(15)
   newName: string;
 
   constructor(id: number, newName: string) {
