@@ -1,5 +1,8 @@
+import { TaskPriority } from 'src/enums/task_priority';
+
 export interface ITask {
-  _id: number;
+  id: number;
   name: string;
   owner: number;
+  priority: TaskPriority;
 }

@@ -1,10 +1,12 @@
 import {
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { TaskPriority } from 'src/enums/task_priority';
 
 export class CreateTaskDto {
   @IsString()
@@ -12,8 +14,12 @@ export class CreateTaskDto {
   @MaxLength(15)
   name: string;
 
-  constructor(name: string) {
+  @IsEnum(TaskPriority)
+  priority: TaskPriority;
+
+  constructor(name: string, priority: TaskPriority) {
     this.name = name;
+    this.priority = priority;
   }
 }
 

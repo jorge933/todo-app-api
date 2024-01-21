@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { TaskPriority } from 'src/enums/task_priority';
 import { transformID } from 'src/helpers/id-transformer';
 
 export type TaskDocument = HydratedDocument<Task>;
@@ -23,6 +24,9 @@ export class Task {
 
   @Prop({ type: String, required: true })
   name: string;
+
+  @Prop({ type: Number, enum: TaskPriority, required: true })
+  priority: TaskPriority;
 
   @Prop({ type: Number, ref: 'User' })
   owner: number;

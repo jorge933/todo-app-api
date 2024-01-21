@@ -22,9 +22,9 @@ export class TasksService {
     return tasks;
   }
 
-  async create(userId: number, { name }: CreateTaskDto) {
+  async create(userId: number, createTask: CreateTaskDto) {
     const task = await this.taskRepository.create({
-      name,
+      ...createTask,
       owner: userId,
     });
 

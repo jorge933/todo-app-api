@@ -1,6 +1,10 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
-import { DeleteTaskDto, EditTaskNameDto } from '../../services/tasks/task.dto';
+import {
+  CreateTaskDto,
+  DeleteTaskDto,
+  EditTaskNameDto,
+} from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
 
 export interface QueryOptions {
@@ -17,7 +21,7 @@ export class TasksController {
   }
 
   @Post('create')
-  create(@GetUserId() userId: number, @Body() newTask: any) {
+  create(@GetUserId() userId: number, @Body() newTask: CreateTaskDto) {
     const tasks = this.tasksService.create(userId, newTask);
     return tasks;
   }
