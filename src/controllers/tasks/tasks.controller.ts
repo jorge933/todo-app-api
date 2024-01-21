@@ -1,12 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
-import {
-  CreateTaskDto,
-  EditTaskNameDto,
-  DeleteTaskDto,
-} from '../../services/tasks/task.dto';
+import { DeleteTaskDto, EditTaskNameDto } from '../../services/tasks/task.dto';
 import { TasksService } from '../../services/tasks/tasks.service';
-import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
 
 export interface QueryOptions {
   sort?: string;
@@ -14,10 +9,7 @@ export interface QueryOptions {
 }
 @Controller('tasks')
 export class TasksController {
-  constructor(
-    private readonly tasksService: TasksService,
-    private unit: UnitOfWorkService,
-  ) {}
+  constructor(private readonly tasksService: TasksService) {}
   @Get()
   getAll(@GetUserId() userId: number, @Query() filterOptions?: QueryOptions) {
     const tasks = this.tasksService.getAll(userId, filterOptions);
@@ -25,7 +17,7 @@ export class TasksController {
   }
 
   @Post('create')
-  create(@GetUserId() userId: number, @Body() newTask: CreateTaskDto) {
+  create(@GetUserId() userId: number, @Body() newTask: any) {
     const tasks = this.tasksService.create(userId, newTask);
     return tasks;
   }
