@@ -5,4 +5,5 @@ export interface ITask {
   name: string;
   owner: number;
   priority: TaskPriority;
+  completed: boolean;
 }

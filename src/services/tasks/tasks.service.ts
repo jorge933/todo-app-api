@@ -26,6 +26,7 @@ export class TasksService {
     const task = await this.taskRepository.create({
       ...createTask,
       owner: userId,
+      completed: false,
     });
 
     delete task.owner;
