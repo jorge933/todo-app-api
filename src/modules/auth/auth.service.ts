@@ -42,12 +42,13 @@ export class AuthService {
       password,
     });
 
-    const id = userCreated._id.toString();
+    const id = userCreated.id.toString();
     const token = this.generateToken(id);
 
-    const userInfos = { username, email };
+    delete userCreated._id;
+    delete userCreated.password;
 
-    return { token, user: userInfos };
+    return { token, user: userCreated };
   }
 
   async login(credentials: LoginUserDto) {

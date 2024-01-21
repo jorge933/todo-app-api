@@ -42,6 +42,7 @@ export class ResponseInterceptor implements NestInterceptor {
   }
 
   errorHandler(exception: HttpException | Error[], context: ExecutionContext) {
+    console.log(exception);
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 

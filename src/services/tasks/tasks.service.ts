@@ -28,6 +28,8 @@ export class TasksService {
       owner: userId,
     });
 
+    delete task.owner;
+
     return task;
   }
 

@@ -17,11 +17,11 @@ export class BaseRepository<T> {
   constructor(public model: Model<T>) {}
 
   async create(entity: T) {
-    const entityCreated = new this.model(entity) as Document<T>;
+    const entityCreated = new this.model(entity);
 
     await entityCreated.save();
 
-    return (await entityCreated.toJSON()) as HydratedDocument<T>;
+    return await entityCreated.toJSON();
   }
 
   async findOne(expression: FilterQuery<T>) {

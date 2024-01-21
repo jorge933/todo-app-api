@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { transformID } from 'src/helpers/id-transformer';
 
 export type TaskDocument = HydratedDocument<Task>;
 
@@ -8,8 +9,15 @@ export type TaskDocument = HydratedDocument<Task>;
   autoIndex: true,
   versionKey: false,
   timestamps: true,
+  toObject: {
+    transform: transformID,
+  },
+  toJSON: {
+    transform: transformID,
+  },
 })
 export class Task {
+  id?: number;
   @Prop({ type: Number, unique: true })
   _id?: number;
 
