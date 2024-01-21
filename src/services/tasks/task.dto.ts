@@ -1,8 +1,15 @@
-import { IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
-  @MinLength(3)
+  @MinLength(1)
+  @MaxLength(15)
   name: string;
 
   constructor(name: string) {
@@ -27,7 +34,7 @@ export class EditTaskNameDto {
 
   @IsString()
   @MinLength(1)
-  @MinLength(15)
+  @MaxLength(15)
   newName: string;
 
   constructor(id: number, newName: string) {
