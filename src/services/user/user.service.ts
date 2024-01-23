@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UpdatePasswordDto } from 'src/controllers/user/update-credentials.dto';
-import { DomainErrorsService } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
-import { UserRepository } from 'src/repositories/user/user.repository';
-import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
+import { DomainErrorsService } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
+import { User } from 'src/schemas/user.schema';
+import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
+import { BaseService } from '../base/base.service';
 
 interface CredentialUpdate {
   email: string;
@@ -13,13 +14,12 @@ interface CredentialUpdate {
 }
 
 @Injectable()
-export class UserService {
-  userRepository: UserRepository;
+export class UserService extends BaseService<User> {
   domainErrorsService: DomainErrorsService;
 
-  constructor(private readonly unitOfWork: UnitOfWorkService) {
-    this.userRepository = unitOfWork.userRepository;
-    this.domainErrorsService = unitOfWork.domainErrorsService;
+  constructor({ domainErrorsService, userRepository }: UnitOfWorkService) {
+    super(userRepository);
+    this.domainErrorsService = domainErrorsService;
   }
 
   async updateUserCredential<PropToUpdate extends keyof CredentialUpdate>(
@@ -33,8 +33,7 @@ export class UserService {
       [property]: credential[property],
     };
 
-    const existUserWithCredential =
-      await this.userRepository.findOne(newCredentialValue);
+    const existUserWithCredential = await this.findOne(newCredentialValue);
 
     if (existUserWithCredential && unique) {
       this.domainErrorsService.addError(
@@ -47,10 +46,7 @@ export class UserService {
       return;
     }
 
-    this.userRepository.updateOne(
-      { _id: userId },
-      { $set: newCredentialValue },
-    );
+    this.updateOne({ _id: userId }, { ...newCredentialValue });
     return newCredentialValue;
   }
 
@@ -58,7 +54,7 @@ export class UserService {
     userId: number,
     { password, newPassword }: UpdatePasswordDto,
   ) {
-    const user = await this.userRepository.findOne({ _id: userId });
+    const user = await this.findOne({ _id: userId });
 
     const pass = user?.password ?? '';
 
@@ -67,7 +63,7 @@ export class UserService {
     const invalidCredentials = !user || !equalPasswords;
 
     if (invalidCredentials) {
-      this.unitOfWork.domainErrorsService.addError(
+      this.domainErrorsService.addError(
         {
           message: 'Senha incorreta!',
           type: HttpTypeErrors.INVALID_CREDENTIALS,
@@ -79,10 +75,7 @@ export class UserService {
 
     const newPasswordHashed = await bcrypt.hash(newPassword, 10);
 
-    this.userRepository.updateOne(
-      { _id: userId },
-      { $set: { password: newPasswordHashed } },
-    );
+    this.updateOne({ _id: userId }, { password: newPasswordHashed });
     return { message: 'Senha atualizada!' };
   }
 }

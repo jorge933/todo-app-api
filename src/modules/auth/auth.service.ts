@@ -6,20 +6,23 @@ import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
+import { BaseService } from 'src/services/base/base.service';
+import { User } from 'src/schemas/user.schema';
 
 @Injectable()
-export class AuthService {
-  userRepository: UserRepository;
+export class AuthService extends BaseService<User> {
   constructor(
     private readonly unitOfWork: UnitOfWorkService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    super(unitOfWork.userRepository);
+  }
 
-  async create(user: CreateUserDto) {
+  async createUser(user: CreateUserDto) {
     const email = user.email.toLowerCase();
     const username = user.username.toLowerCase();
 
-    const existUser = await this.unitOfWork.userRepository.findOne({
+    const existUser = await this.findOne({
       $or: [{ email: email }, { username: username }],
     });
 
@@ -36,7 +39,9 @@ export class AuthService {
 
     const password = await bcrypt.hash(user.password, 10);
 
-    const userCreated = await this.unitOfWork.userRepository.create({
+    console.log(password);
+
+    const userCreated = await this.create({
       email,
       username,
       password,
@@ -45,7 +50,6 @@ export class AuthService {
     const id = userCreated.id.toString();
     const token = this.generateToken(id);
 
-    delete userCreated._id;
     delete userCreated.password;
 
     return { token, user: userCreated };
@@ -54,7 +58,7 @@ export class AuthService {
   async login(credentials: LoginUserDto) {
     const login = credentials.login.toLowerCase();
 
-    const user = await this.unitOfWork.userRepository.findOne({
+    const user = await this.findOne({
       $or: [{ email: login }, { username: login }],
     });
 
@@ -77,10 +81,11 @@ export class AuthService {
 
     const id = user._id.toString();
     const token = this.generateToken(id);
-    const { username, email, photo } = user;
-    const userInfos = { username, email, photo };
 
-    return { token, user: userInfos };
+    const userJson = user.toJSON();
+    delete userJson.password;
+
+    return { token, user: userJson };
   }
 
   private generateToken(id: string) {

@@ -1,5 +1,4 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { IsPublic } from './decorators/is-public-route';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,7 +11,7 @@ export class AuthController {
   @Post('signup')
   @IsPublic()
   async createUser(@Body() newUser: CreateUserDto) {
-    return await this.authenticate('create', newUser);
+    return await this.authenticate('createUser', newUser);
   }
 
   @Post('login')
