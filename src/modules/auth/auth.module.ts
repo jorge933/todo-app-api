@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '10d' },
+      signOptions: { expiresIn: '12h' },
     }),
     UnitOfWorkModule,
   ],

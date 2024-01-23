@@ -19,7 +19,7 @@ fdescribe('AuthController', () => {
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
         JwtModule.register({
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '10d' },
+          signOptions: { expiresIn: '12h' },
         }),
       ],
       controllers: [AuthController],
