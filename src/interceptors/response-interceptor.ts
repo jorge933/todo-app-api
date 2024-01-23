@@ -36,7 +36,6 @@ export class ResponseInterceptor implements NestInterceptor {
         return this.responseHandler(res, context);
       }),
       catchError((err: HttpException) => {
-        console.log(err);
         return throwError(() => this.errorHandler(err, context));
       }),
     );

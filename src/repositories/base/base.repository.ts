@@ -32,8 +32,6 @@ export class BaseRepository<T> {
       limit,
     };
 
-    console.log(options);
-
     const query = this.model.find({ ...expression, ...filters }, {}, options);
 
     query.select(select);

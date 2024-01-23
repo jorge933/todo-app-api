@@ -18,7 +18,5 @@ function formatDate(date: string, hour: string) {
 
   const formattedDate = new Date(`${date}  ${hour}`);
 
-  console.log(formattedDate);
-
   return formattedDate;
 }
