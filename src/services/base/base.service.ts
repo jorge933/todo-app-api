@@ -66,29 +66,25 @@ export class BaseService<T> {
     const filtersTransformed: Filters = {};
     const keys = Object.entries(filters);
 
-    const execOperator = (value: string, options?: unknown) => {
-      const [operator] = value.split(':');
-      const operatorFunction = this.operators[operator];
-
-      return operatorFunction ? operatorFunction(value, options) : value;
-    };
-
     keys.forEach(([key, value]) => {
       const isArray = Array.isArray(value);
 
-      if (isArray) {
-        const filter = {
-          $gte: execOperator(value[0], 'start'),
-          $lt: execOperator(value[1], 'end'),
-        };
-
-        filtersTransformed[key] = filter;
-      } else {
-        filtersTransformed[key] = execOperator(value);
-      }
+      isArray
+        ? (filtersTransformed[key] = {
+            $gte: this.execOperator(value[0], 'start'),
+            $lt: this.execOperator(value[1], 'end'),
+          })
+        : (filtersTransformed[key] = this.execOperator(value));
     });
 
     return filtersTransformed;
+  }
+
+  execOperator(value: string, option?: string) {
+    const [operator] = value.split(':');
+    const operatorFunction = this.operators[operator];
+
+    return operatorFunction ? operatorFunction(value, option) : value;
   }
 
   async delete(filter: FilterQuery<T>) {
