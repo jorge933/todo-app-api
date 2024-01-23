@@ -1,23 +1,21 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { SortOrder } from 'mongoose';
+import { TasksService } from 'src/services/tasks/tasks.service';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import {
   CreateTaskDto,
   DeleteTaskDto,
   EditTaskNameDto,
 } from '../../services/tasks/task.dto';
-import { TasksService } from 'src/services/tasks/tasks.service';
-import { SortOrder } from 'mongoose';
-import { Filters } from 'src/interfaces/queries';
 
-export interface QueryOptions {
-  filters?: Filters;
-  sort?: { [key: string]: SortOrder };
-}
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
   @Get()
-  getAll(@GetUserId() userId: number, @Query() queryOptions?: QueryOptions) {
+  getAll(
+    @GetUserId() userId: number,
+    @Query() queryOptions?: { [key: string]: string },
+  ) {
     const tasks = this.tasksService.getAll(userId, queryOptions);
     return tasks;
   }

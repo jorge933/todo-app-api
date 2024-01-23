@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { QueryOptions } from 'src/controllers/tasks/tasks.controller';
+import { date } from 'src/helpers/date';
+import { like } from 'src/helpers/like';
+import { Filters, Pagination } from 'src/interfaces/queries';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { CreateTaskDto, EditTaskNameDto } from './task.dto';
-import { date } from 'src/helpers/date';
-import { like } from 'src/helpers/like';
-import { Filters } from 'src/interfaces/queries';
+import { SortOrder } from 'mongoose';
 
 @Injectable()
 export class TasksService {
@@ -19,19 +19,29 @@ export class TasksService {
     this.taskRepository = unitOfWork.tasksRepository;
   }
 
-  async getAll(userId: number, queryOptions?: QueryOptions) {
-    const sort = queryOptions.sort;
+  async getAll(userId: number, queryOptions?: { [key: string]: string }) {
+    const { sort, page, size } = queryOptions;
+    const sortTransformed = this.transformSort(sort);
+
     delete queryOptions.sort;
+    delete queryOptions.page;
+    delete queryOptions.size;
 
     const filters = this.transformFilters(
       queryOptions as { [key: string]: string },
     );
 
+    const pagination: Pagination = {
+      page: Number(page) || null,
+      size: Number(size) || null,
+    };
+
     const tasks = await this.taskRepository.find({
       expression: { owner: userId },
-      sort,
       filters,
       select: ['-owner'],
+      sort: sortTransformed ?? {},
+      pagination,
     });
 
     return tasks;
@@ -61,6 +71,14 @@ export class TasksService {
       { _id: taskInfos.id, owner: userId },
       { $set: { name: taskInfos.newName } },
     );
+  }
+
+  private transformSort(sort: string) {
+    const [property, order] = sort.split(',');
+
+    return {
+      [property]: order as SortOrder,
+    };
   }
 
   transformFilters(filters: { [key: string]: string }) {

@@ -1,4 +1,4 @@
-import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, Query, QueryOptions, UpdateQuery } from 'mongoose';
 import { FindAllParams } from 'src/interfaces/queries';
 
 export class BaseRepository<T> {
@@ -17,10 +17,29 @@ export class BaseRepository<T> {
     return result;
   }
 
-  async find({ expression, filters }: FindAllParams<T>) {
-    const query = this.model.find({ ...expression, ...filters });
+  async find({
+    expression,
+    filters,
+    select,
+    sort,
+    pagination,
+    populate,
+  }: FindAllParams<T>) {
+    const { page: skip, size: limit } = pagination ?? {};
+    const options: QueryOptions = {
+      sort,
+      skip,
+      limit,
+    };
 
-    return query;
+    console.log(options);
+
+    const query = this.model.find({ ...expression, ...filters }, {}, options);
+
+    query.select(select);
+    query.populate(populate);
+
+    return await query;
   }
 
   async updateOne(filter?: FilterQuery<T>, update?: UpdateQuery<T>) {
