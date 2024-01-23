@@ -1,5 +1,4 @@
-import { FilterQuery } from 'mongoose';
-import { QueryOptions } from 'src/controllers/tasks/tasks.controller';
+import { FilterQuery, SortOrder } from 'mongoose';
 
 export interface Pagination {
   page: number;
@@ -8,8 +7,17 @@ export interface Pagination {
 
 export interface FindAllParams<T> {
   expression: FilterQuery<T>;
-  queryOptions?: QueryOptions;
+  filters?: Filters;
+  sort?: { [key: string]: SortOrder };
   populate?: string | string[];
   select?: string | string[];
   pagination?: Pagination;
 }
+
+export type Filters = {
+  [key: string]: string | Range;
+};
+
+type Range = {
+  [key in '$gte' | '$lt']: Date;
+};

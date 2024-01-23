@@ -5,18 +5,20 @@ import {
   DeleteTaskDto,
   EditTaskNameDto,
 } from '../../services/tasks/task.dto';
-import { TasksService } from '../../services/tasks/tasks.service';
+import { TasksService } from 'src/services/tasks/tasks.service';
+import { SortOrder } from 'mongoose';
+import { Filters } from 'src/interfaces/queries';
 
 export interface QueryOptions {
-  sort?: string;
-  filter?: string;
+  filters?: Filters;
+  sort?: { [key: string]: SortOrder };
 }
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
   @Get()
-  getAll(@GetUserId() userId: number, @Query() filterOptions?: QueryOptions) {
-    const tasks = this.tasksService.getAll(userId, filterOptions);
+  getAll(@GetUserId() userId: number, @Query() queryOptions?: QueryOptions) {
+    const tasks = this.tasksService.getAll(userId, queryOptions);
     return tasks;
   }
 
