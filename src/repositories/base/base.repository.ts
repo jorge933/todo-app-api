@@ -9,7 +9,7 @@ export class BaseRepository<T> {
 
     await entityCreated.save();
 
-    return await entityCreated.toJSON();
+    return entityCreated.toJSON();
   }
 
   async findOne(expression: FilterQuery<T>) {
