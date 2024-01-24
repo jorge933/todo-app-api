@@ -1,4 +1,4 @@
-import { TaskPriority } from 'src/enums/task_priority';
+import { TaskPriority } from 'src/enums/task-priority';
 
 export interface ITask {
   id: number;
