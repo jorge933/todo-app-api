@@ -32,19 +32,18 @@ export class BaseService<T> {
     );
 
     const pagination: Pagination = {
-      page: Number(page) || null,
-      size: Number(size) || null,
+      page: Number(page) || 1,
+      size: Number(size) || 10,
     };
 
-    const tasks = await this.baseRepository.find({
+    const query = await this.baseRepository.find({
       expression,
       filters,
-      select: ['-owner'],
       sort: sortTransformed ?? {},
       pagination,
     });
 
-    return tasks;
+    return query;
   }
 
   async findOne(filter: FilterQuery<T>) {
@@ -63,19 +62,26 @@ export class BaseService<T> {
   transformFilters(filters: { [key: string]: string }) {
     if (!filters) return;
 
-    const filtersTransformed: Filters = {};
-    const keys = Object.entries(filters);
+    const entries = Object.entries(filters);
 
-    keys.forEach(([key, value]) => {
-      const isArray = Array.isArray(value);
+    const filtersTransformed: Filters = entries.reduce(
+      (previousValue, [key, value]) => {
+        const isArray = Array.isArray(value);
 
-      isArray
-        ? (filtersTransformed[key] = {
-            $gte: this.execOperator(value[0], 'start'),
-            $lt: this.execOperator(value[1], 'end'),
-          })
-        : (filtersTransformed[key] = this.execOperator(value));
-    });
+        const filterValue = isArray
+          ? {
+              $gte: this.execOperator(value[0], 'start'),
+              $lt: this.execOperator(value[1], 'end'),
+            }
+          : this.execOperator(value);
+
+        return {
+          ...previousValue,
+          [key]: filterValue,
+        };
+      },
+      {},
+    );
 
     return filtersTransformed;
   }
