@@ -12,7 +12,9 @@ import { DomainErrorsService } from './domain-errors/domain-errors.service';
 import { generateSchemaImport } from './functions/generate-schema-import';
 import { UnitOfWorkService } from './unit-of-work.service';
 import { Team, TeamSchema } from 'src/schemas/team.schema';
+import { TeamMember, TeamMemberSchema } from 'src/schemas/team-members.schema';
 import { TeamsRepository } from 'src/repositories/teams/teams.repository';
+import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
 
 @Module({
   imports: [
@@ -21,11 +23,10 @@ import { TeamsRepository } from 'src/repositories/teams/teams.repository';
         id: 'user_counter',
         inc_field: '_id',
       }),
-      
 
       generateSchemaImport(Task.name, TaskSchema, {
-            id: 'task_counter',
-            inc_field: '_id',
+        id: 'task_counter',
+        inc_field: '_id',
       }),
 
       generateSchemaImport(Team.name, TeamSchema, {
@@ -40,12 +41,16 @@ import { TeamsRepository } from 'src/repositories/teams/teams.repository';
     UnitOfWorkService,
     UserRepository,
     TasksRepository,
+    TeamsRepository,
+    TeamMembersRepository,
     DomainErrorsService,
   ],
   providers: [
     UnitOfWorkService,
     UserRepository,
     TasksRepository,
+    TeamsRepository,
+    TeamMembersRepository,
     DomainErrorsService,
   ],
 })
