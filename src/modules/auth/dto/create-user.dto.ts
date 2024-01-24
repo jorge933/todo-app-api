@@ -23,8 +23,8 @@ export class CreateUserDto {
   password: string;
 
   constructor(email: string, username: string, password: string) {
-    this.email = email.toLowerCase();
-    this.username = username.toLowerCase();
+    this.email = email;
+    this.username = username;
     this.password = password;
   }
 }

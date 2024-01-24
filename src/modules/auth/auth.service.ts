@@ -1,13 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { HttpTypeErrors } from 'src/enums/http-type-errors';
+import { User } from 'src/schemas/user.schema';
+import { BaseService } from 'src/services/base/base.service';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
-import { HttpTypeErrors } from 'src/enums/http-type-errors';
-import { BaseService } from 'src/services/base/base.service';
-import { User } from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService extends BaseService<User> {
@@ -19,6 +18,9 @@ export class AuthService extends BaseService<User> {
   }
 
   async createUser({ email, username, password }: CreateUserDto) {
+    email = email.toLowerCase();
+    username = username.toLowerCase();
+
     const existUser = await this.findOne({
       $or: [{ email }, { username }],
     });
@@ -51,6 +53,8 @@ export class AuthService extends BaseService<User> {
   }
 
   async login({ login, password }: LoginUserDto) {
+    login = login.toLowerCase();
+
     const user = await this.findOne({
       $or: [{ email: login }, { username: login }],
     });
