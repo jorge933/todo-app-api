@@ -25,7 +25,7 @@ export class UserService extends BaseService<User> {
   async updateUserCredential<PropToUpdate extends keyof CredentialUpdate>(
     userId: number,
     credential: Pick<CredentialUpdate, PropToUpdate>,
-    unique: boolean = true,
+    fieldToUpdateIsUnique: boolean = true,
   ) {
     const [property] = Object.keys(credential);
 
@@ -35,7 +35,7 @@ export class UserService extends BaseService<User> {
 
     const existUserWithCredential = await this.findOne(newCredentialValue);
 
-    if (existUserWithCredential && unique) {
+    if (existUserWithCredential && fieldToUpdateIsUnique) {
       this.domainErrorsService.addError(
         {
           message: `Este ${property} já foi registrado!`,
@@ -57,7 +57,6 @@ export class UserService extends BaseService<User> {
     const user = await this.findOne({ _id: userId });
 
     const pass = user?.password ?? '';
-
     const equalPasswords = await bcrypt.compare(password, pass);
 
     const invalidCredentials = !user || !equalPasswords;
