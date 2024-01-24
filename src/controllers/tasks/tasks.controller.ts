@@ -1,12 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
-import { SortOrder } from 'mongoose';
 import { TasksService } from 'src/services/tasks/tasks.service';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
-import {
-  CreateTaskDto,
-  DeleteTaskDto,
-  EditTaskNameDto,
-} from '../../services/tasks/task.dto';
+import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
 
 @Controller('tasks')
 export class TasksController {
