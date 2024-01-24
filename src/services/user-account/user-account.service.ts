@@ -1,20 +1,14 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UpdatePasswordDto } from 'src/controllers/user/update-credentials.dto';
+import { UpdatePasswordDto } from 'src/controllers/user-account/update-credentials.dto';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
 import { DomainErrorsService } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
 import { User } from 'src/schemas/user.schema';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { BaseService } from '../base/base.service';
 
-interface CredentialUpdate {
-  email: string;
-  photo: string;
-  username: string;
-}
-
 @Injectable()
-export class UserService extends BaseService<User> {
+export class UserAccountService extends BaseService<User> {
   domainErrorsService: DomainErrorsService;
 
   constructor({ domainErrorsService, userRepository }: UnitOfWorkService) {
@@ -22,9 +16,9 @@ export class UserService extends BaseService<User> {
     this.domainErrorsService = domainErrorsService;
   }
 
-  async updateUserCredential<PropToUpdate extends keyof CredentialUpdate>(
+  async updateUserCredential<PropToUpdate extends keyof User>(
     userId: number,
-    credential: Pick<CredentialUpdate, PropToUpdate>,
+    credential: Pick<User, PropToUpdate>,
     fieldToUpdateIsUnique: boolean = true,
   ) {
     const [property] = Object.keys(credential);
@@ -77,4 +71,6 @@ export class UserService extends BaseService<User> {
     this.updateOne({ _id: userId }, { password: newPasswordHashed });
     return { message: 'Senha atualizada!' };
   }
+
+  getUserTeams() {}
 }

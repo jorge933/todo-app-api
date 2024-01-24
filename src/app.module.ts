@@ -13,10 +13,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
 
 import { TeamsController } from './controllers/teams/teams.controller';
-import { UserController } from './controllers/user/user.controller';
+import { UserAccountController } from './controllers/user-account/user-account.controller';
 import { TasksService } from './services/tasks/tasks.service';
 import { TeamsService } from './services/teams/teams.service';
-import { UserService } from './services/user/user.service';
+import { UserAccountService } from './services/user-account/user-account.service';
 
 @Module({
   imports: [
@@ -25,14 +25,14 @@ import { UserService } from './services/user/user.service';
     MongooseModule.forRoot(process.env.DB_URI),
     UnitOfWorkModule,
   ],
-  controllers: [TasksController, UserController, TeamsController],
+  controllers: [TasksController, UserAccountController, TeamsController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
     TasksService,
-    UserService,
+    UserAccountService,
     TeamsService,
   ],
 })

@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { GetUserId } from 'src/modules/auth/decorators/get-user';
 import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
-import { UserService } from 'src/services/user/user.service';
+import { UserAccountService } from 'src/services/user-account/user-account.service';
 import {
   UpdateEmailDto,
   UpdatePasswordDto,
@@ -9,11 +9,8 @@ import {
 } from './update-credentials.dto';
 
 @Controller('user')
-export class UserController {
-  constructor(
-    private readonly unitOfWork: UnitOfWorkService,
-    private readonly userService: UserService,
-  ) {}
+export class UserAccountController {
+  constructor(private readonly userService: UserAccountService) {}
 
   @Post('change/username')
   async changeUsername(
