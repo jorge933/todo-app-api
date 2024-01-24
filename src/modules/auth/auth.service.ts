@@ -18,12 +18,9 @@ export class AuthService extends BaseService<User> {
     super(unitOfWork.userRepository);
   }
 
-  async createUser(user: CreateUserDto) {
-    const email = user.email.toLowerCase();
-    const username = user.username.toLowerCase();
-
+  async createUser({ email, username, password }: CreateUserDto) {
     const existUser = await this.findOne({
-      $or: [{ email: email }, { username: username }],
+      $or: [{ email }, { username }],
     });
 
     if (existUser) {
@@ -37,14 +34,12 @@ export class AuthService extends BaseService<User> {
       return;
     }
 
-    const password = await bcrypt.hash(user.password, 10);
-
-    console.log(password);
+    const passwordHashed = await bcrypt.hash(password, 10);
 
     const userCreated = await this.create({
       email,
       username,
-      password,
+      password: passwordHashed,
     });
 
     const id = userCreated.id.toString();
@@ -55,16 +50,14 @@ export class AuthService extends BaseService<User> {
     return { token, user: userCreated };
   }
 
-  async login(credentials: LoginUserDto) {
-    const login = credentials.login.toLowerCase();
-
+  async login({ login, password }: LoginUserDto) {
     const user = await this.findOne({
       $or: [{ email: login }, { username: login }],
     });
 
     const pass = user?.password ?? '';
 
-    const equalPasswords = await bcrypt.compare(credentials.password, pass);
+    const equalPasswords = await bcrypt.compare(password, pass);
 
     const invalidCredentials = !user || !equalPasswords;
 
