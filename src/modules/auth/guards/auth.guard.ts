@@ -1,23 +1,14 @@
 // NestJS
-import {
-  ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from '../decorators/is-public-route';
-import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
-import { Error } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
+import { Error } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
+import { IS_PUBLIC_KEY } from '../decorators/is-public-route';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(
-    private reflector: Reflector,
-    private readonly unitOfWork: UnitOfWorkService,
-  ) {
+  constructor(private reflector: Reflector) {
     super();
   }
 
