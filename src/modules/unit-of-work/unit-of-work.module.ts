@@ -32,6 +32,8 @@ import { TeamsRepository } from 'src/repositories/teams/teams.repository';
         id: 'teams_counter',
         inc_field: '_id',
       }),
+
+      generateSchemaImport(TeamMember.name, TeamMemberSchema),
     ]),
   ],
   exports: [
