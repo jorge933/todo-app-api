@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { TaskPriority } from 'src/enums/task-priority';
 import { transformID } from 'src/helpers/id-transformer';
 
