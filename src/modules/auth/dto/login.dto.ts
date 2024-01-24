@@ -12,7 +12,7 @@ export class LoginUserDto {
   password: string;
 
   constructor(login: string, password: string) {
-    this.login = login;
+    this.login = login.toLowerCase();
     this.password = password;
   }
 }
