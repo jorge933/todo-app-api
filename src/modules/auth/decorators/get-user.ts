@@ -6,8 +6,8 @@ export interface JwtUser {
 
 export const GetUserId = createParamDecorator(
   (data: unknown, context: ExecutionContext): string => {
-    const request = context.switchToHttp().getRequest<{ user: JwtUser }>();
+    const { user } = context.switchToHttp().getRequest<{ user: JwtUser }>();
 
-    return request.user.id;
+    return user.id;
   },
 );
