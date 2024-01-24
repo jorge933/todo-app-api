@@ -3,47 +3,28 @@ import { Module } from '@nestjs/common';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 
-import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
-import * as AutoIncrementFactory from 'mongoose-sequence';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { Task, TaskSchema } from '../../schemas/task.schema';
 import { User, UserSchema } from '../../schemas/user.schema';
 
 import { DomainErrorsService } from './domain-errors/domain-errors.service';
+import { generateSchemaImport } from './functions/generate-schema-import';
 import { UnitOfWorkService } from './unit-of-work.service';
 
 @Module({
   imports: [
     MongooseModule.forFeatureAsync([
-      {
-        name: Task.name,
-        useFactory: (connection: Connection) => {
-          const schema = TaskSchema;
-          const AutoIncrement = AutoIncrementFactory(connection);
-          schema.plugin(AutoIncrement, {
+      generateSchemaImport(User.name, UserSchema, {
+        id: 'user_counter',
+        inc_field: '_id',
+      }),
+      
+
+      generateSchemaImport(Task.name, TaskSchema, {
             id: 'task_counter',
             inc_field: '_id',
-          });
-          return schema;
-        },
-        inject: [getConnectionToken()],
-      },
-    ]),
-    MongooseModule.forFeatureAsync([
-      {
-        name: User.name,
-        useFactory: (connection: Connection) => {
-          const schema = UserSchema;
-          const AutoIncrement = AutoIncrementFactory(connection);
-          schema.plugin(AutoIncrement, {
-            id: 'user_counter',
-            inc_field: '_id',
-          });
-          return schema;
-        },
-        inject: [getConnectionToken()],
-      },
+      }),
     ]),
   ],
   exports: [
