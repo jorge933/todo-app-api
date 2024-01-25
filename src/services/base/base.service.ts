@@ -32,7 +32,7 @@ export class BaseService<T> {
     );
 
     const pagination: Pagination = {
-      page: Number(page) || 1,
+      page: Number(page) || 0,
       size: Number(size) || 10,
     };
 
