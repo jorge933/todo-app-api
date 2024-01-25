@@ -24,7 +24,9 @@ export class UserAccountService extends BaseService<User> {
     const [property] = Object.keys(credential);
 
     const newCredentialValue = {
-      [property]: credential[property],
+      [property]: fieldToUpdateIsUnique
+        ? credential[property].toLowerCase()
+        : credential[property],
     };
 
     const existUserWithCredential = await this.findOne(newCredentialValue);
@@ -58,7 +60,7 @@ export class UserAccountService extends BaseService<User> {
     if (invalidCredentials) {
       this.domainErrorsService.addError(
         {
-          message: 'Senha incorreta!',
+          message: 'Credenciais inválidas!',
           type: HttpTypeErrors.INVALID_CREDENTIALS,
         },
         HttpStatus.UNAUTHORIZED,
