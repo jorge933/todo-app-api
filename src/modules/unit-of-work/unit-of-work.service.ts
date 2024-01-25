@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
-import { DomainErrorsService } from './domain-errors/domain-errors.service';
+import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { TeamsRepository } from 'src/repositories/teams/teams.repository';
 import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
 

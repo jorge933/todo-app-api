@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Task, TaskSchema } from '../../schemas/task.schema';
 import { User, UserSchema } from '../../schemas/user.schema';
 
-import { DomainErrorsService } from './domain-errors/domain-errors.service';
+import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { generateSchemaImport } from './functions/generate-schema-import';
 import { UnitOfWorkService } from './unit-of-work.service';
 import { Team, TeamSchema } from 'src/schemas/team.schema';

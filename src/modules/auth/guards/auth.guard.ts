@@ -3,7 +3,7 @@ import { ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
-import { Error } from 'src/modules/unit-of-work/domain-errors/domain-errors.service';
+import { Error } from 'src/services/domain-errors/domain-errors.service';
 import { IS_PUBLIC_KEY } from '../decorators/is-public-route';
 
 @Injectable()

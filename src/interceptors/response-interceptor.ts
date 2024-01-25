@@ -12,7 +12,7 @@ import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service'
 import {
   DomainErrorsService,
   Error,
-} from '../modules/unit-of-work/domain-errors/domain-errors.service';
+} from '../services/domain-errors/domain-errors.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
