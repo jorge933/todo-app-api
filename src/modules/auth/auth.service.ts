@@ -44,8 +44,7 @@ export class AuthService extends BaseService<User> {
       password: passwordHashed,
     });
 
-    const id = userCreated.id.toString();
-    const token = this.generateToken(id);
+    const token = this.generateToken({ id: userCreated.id });
 
     delete userCreated.password;
 
@@ -76,8 +75,7 @@ export class AuthService extends BaseService<User> {
       return;
     }
 
-    const id = user._id.toString();
-    const token = this.generateToken(id);
+    const token = this.generateToken({ id: user._id });
 
     const userJson = user.toJSON();
     delete userJson.password;
@@ -85,8 +83,8 @@ export class AuthService extends BaseService<User> {
     return { token, user: userJson };
   }
 
-  private generateToken(id: string) {
-    const token = this.jwtService.sign({ id });
+  private generateToken(json: Record<string, unknown>) {
+    const token = this.jwtService.sign(json);
     return token;
   }
 }
