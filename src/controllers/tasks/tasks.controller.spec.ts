@@ -1,110 +1,97 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ITask } from 'src/interfaces/task';
-import {
-  CreateTaskDto,
-  EditTaskNameDto,
-} from '../../modules/unit-of-work/domain-errors/task.dto';
+import { Document } from 'mongoose';
+import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
+import { TaskPriority } from '../../enums/task-priority';
+import { Task, TaskDocument } from '../../schemas/task.schema';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { TasksController } from './tasks.controller';
+import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
 
 describe('TasksController', () => {
-  let tasksController: TasksController;
+  let controller: TasksController;
   let tasksService: TasksService;
 
-  const owner = 1;
-  let tasks: ITask[] = [];
-  let idCounter: number;
+  const userId = 1;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TasksController],
-      providers: [
-        {
-          provide: TasksService,
-          useValue: {
-            getAll(userId: number) {
-              const tasksOfUser = tasks.filter((task) => task.owner === userId);
-
-              return tasksOfUser;
-            },
-
-            create(owner: number, { name }: CreateTaskDto) {
-              idCounter ? idCounter++ : (idCounter = 1);
-              const task = { _id: idCounter, name, owner };
-
-              tasks.push(task);
-
-              return task._id;
-            },
-
-            delete(userId: number, id: number) {
-              const newTasksValue = tasks.filter((task) => {
-                const isTaskToRemove =
-                  (task.owner === userId && task._id !== id) ||
-                  task.owner !== userId;
-                return isTaskToRemove;
-              });
-
-              tasks = newTasksValue;
-            },
-
-            editTaskName(userId: number, taskInfos: EditTaskNameDto) {
-              tasks.forEach((task, index) => {
-                const isTaskToEdit =
-                  task.owner === userId && task._id === taskInfos.id;
-
-                if (isTaskToEdit) {
-                  tasks[index].name = taskInfos.newName;
-                }
-              });
-            },
-          },
-        },
-      ],
+      providers: [TasksService, ...UNIT_OF_WORK_PROVIDERS],
     }).compile();
+
     tasksService = app.get<TasksService>(TasksService);
-    tasksController = app.get<TasksController>(TasksController);
+    controller = app.get<TasksController>(TasksController);
   });
 
-  it('should create a task and return id', () => {
-    const { length } = tasks;
-    const task = {
-      name: 'Work',
+  it('should be return user tasks', async () => {
+    const tasks = [
+      {
+        id: 1,
+        name: 'Read',
+        completed: false,
+        owner: 1,
+        priority: TaskPriority.LOW,
+      },
+    ];
+
+    jest
+      .spyOn(tasksService, 'find')
+      .mockReturnValue(
+        Promise.resolve(tasks) as Promise<
+          (Document<unknown, {}, Task> & Task & Required<{ _id: number }>)[]
+        >,
+      );
+
+    expect(tasks).toBe(await controller.getAll(userId));
+  });
+
+  it('should be create and task', async () => {
+    const newTaskInfos = new CreateTaskDto('read', TaskPriority.LOW);
+    const createdTask = {
+      id: 1,
+      ...newTaskInfos,
+      completed: false,
+    } as TaskDocument;
+
+    jest
+      .spyOn(tasksService, 'create')
+      .mockReturnValue(Promise.resolve(createdTask));
+
+    expect(createdTask).toEqual(await controller.create(userId, newTaskInfos));
+  });
+
+  it('should be delete task and return result', async () => {
+    const taskDeleteDto = new DeleteTaskDto(1);
+    const deletedResult = {
+      acknowledged: true,
+      deletedCount: 1,
     };
 
-    tasksController.create(owner, task);
+    jest
+      .spyOn(tasksService, 'delete')
+      .mockReturnValue(Promise.resolve(deletedResult));
 
-    expect(length + 1).toBe(tasks.length);
+    expect(deletedResult).toEqual(
+      await controller.delete(userId, taskDeleteDto),
+    );
   });
 
-  it('should return all tasks from user', () => {
-    tasks.push({
-      _id: ++idCounter,
-      name: 'Read',
-      owner: 2,
-    });
+  it('should be delete task and return result', async () => {
+    const editTaskNameDto = new EditTaskNameDto(1, 'write');
+    const editResult = {
+      acknowledged: true,
+      modifiedCount: 1,
+      upsertedId: null,
+      upsertedCount: 0,
+      matchedCount: 1,
+    };
 
-    const userTasks = tasksController.getAll(owner) as unknown as ITask[];
-    const expectedUserTasks = [tasks[0]];
+    jest
+      .spyOn(tasksService, 'updateOne')
+      .mockReturnValue(Promise.resolve(editResult));
 
-    expect(expectedUserTasks).toEqual(userTasks);
-  });
-
-  it('should edit task name', () => {
-    const editTaskNameDto = { _id: 1, newName: 'Listen' };
-    tasksController.editTaskName(owner, editTaskNameDto);
-
-    const expectedName = editTaskNameDto.newName;
-    const newTaskName = tasks[0].name;
-    expect(expectedName).toBe(newTaskName);
-  });
-
-  it('should delete task', () => {
-    const { length } = tasks;
-
-    tasksController.delete(owner, { _id: tasks[0]._id });
-
-    const expectedLength = length - 1;
-    expect(expectedLength).toBe(tasks.length);
+    expect(editResult).toEqual(
+      await controller.editTaskName(userId, editTaskNameDto),
+    );
   });
 });
