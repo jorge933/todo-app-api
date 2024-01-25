@@ -71,6 +71,4 @@ export class UserAccountService extends BaseService<User> {
     this.updateOne({ _id: userId }, { password: newPasswordHashed });
     return { message: 'Senha atualizada!' };
   }
-
-  getUserTeams() {}
 }
