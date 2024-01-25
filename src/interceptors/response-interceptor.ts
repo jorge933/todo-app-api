@@ -27,6 +27,7 @@ export class ResponseInterceptor implements NestInterceptor {
       map((res: unknown) => {
         const { errors } = this.domainErrorsService;
         const hasErrors = !!errors.length;
+
         if (hasErrors) {
           this.errorHandler(errors as Error[], context);
           this.unitOfWorkService.domainErrorsService.cleanErrors();
