@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { HttpTypeErrors } from 'src/enums/http-type-errors';
-import { User } from 'src/schemas/user.schema';
-import { BaseService } from 'src/services/base/base.service';
+import { HttpTypeErrors } from '../../enums/http-type-errors';
+import { User } from '../../schemas/user.schema';
+import { BaseService } from '../../services/base/base.service';
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';

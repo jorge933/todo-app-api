@@ -3,7 +3,7 @@ import { DomainErrorsService } from './domain-errors.service';
 import { HttpTypeErrors } from '../../enums/http-type-errors';
 import { HttpStatus } from '@nestjs/common';
 
-fdescribe('DomainErrorsService', () => {
+describe('DomainErrorsService', () => {
   let service: DomainErrorsService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

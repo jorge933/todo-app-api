@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UpdatePasswordDto } from 'src/controllers/user-account/update-credentials.dto';
-import { HttpTypeErrors } from 'src/enums/http-type-errors';
-import { DomainErrorsService } from 'src/services/domain-errors/domain-errors.service';
-import { User } from 'src/schemas/user.schema';
+import { UpdatePasswordDto } from '../../controllers/user-account/update-credentials.dto';
+import { HttpTypeErrors } from '../../enums/http-type-errors';
+import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
+import { User } from '../../schemas/user.schema';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { BaseService } from '../base/base.service';
 

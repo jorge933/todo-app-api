@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { TaskPriority } from 'src/enums/task-priority';
+import { TaskPriority } from '../../enums/task-priority';
 
 export class CreateTaskDto {
   @IsString()

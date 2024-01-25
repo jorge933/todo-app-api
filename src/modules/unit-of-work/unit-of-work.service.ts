@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
-import { TeamsRepository } from 'src/repositories/teams/teams.repository';
-import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
+import { TeamsRepository } from '../../repositories/teams/teams.repository';
+import { TeamMembersRepository } from '../../repositories/team-members/team-members.repository';
 
 @Injectable()
 export class UnitOfWorkService {

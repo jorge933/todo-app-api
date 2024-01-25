@@ -1,5 +1,5 @@
-import { FilterQuery, Model, Query, QueryOptions, UpdateQuery } from 'mongoose';
-import { FindAllParams } from 'src/interfaces/queries';
+import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
+import { FindAllParams } from '../../interfaces/queries';
 
 export class BaseRepository<T> {
   constructor(public model: Model<T>) {}

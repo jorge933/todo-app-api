@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Team } from 'src/schemas/team.schema';
+import { Team } from '../../schemas/team.schema';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { BaseService } from '../base/base.service';
-import { TeamRoles } from 'src/enums/team-roles';
+import { TeamRoles } from '../../enums/team-roles';
 
 @Injectable()
 export class TeamsService extends BaseService<Team> {

@@ -11,10 +11,13 @@ import { User, UserSchema } from '../../schemas/user.schema';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { generateSchemaImport } from './functions/generate-schema-import';
 import { UnitOfWorkService } from './unit-of-work.service';
-import { Team, TeamSchema } from 'src/schemas/team.schema';
-import { TeamMember, TeamMemberSchema } from 'src/schemas/team-members.schema';
-import { TeamsRepository } from 'src/repositories/teams/teams.repository';
-import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
+import { Team, TeamSchema } from '../../schemas/team.schema';
+import {
+  TeamMember,
+  TeamMemberSchema,
+} from '../../schemas/team-members.schema';
+import { TeamsRepository } from '../../repositories/teams/teams.repository';
+import { TeamMembersRepository } from '../../repositories/team-members/team-members.repository';
 
 @Module({
   imports: [

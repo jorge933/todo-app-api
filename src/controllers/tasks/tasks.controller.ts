@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
-import { TasksService } from 'src/services/tasks/tasks.service';
+import { TasksService } from '../../services/tasks/tasks.service';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
 

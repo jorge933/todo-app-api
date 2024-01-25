@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { GetUserId } from 'src/modules/auth/decorators/get-user';
-import { UnitOfWorkService } from 'src/modules/unit-of-work/unit-of-work.service';
-import { UserAccountService } from 'src/services/user-account/user-account.service';
+import { GetUserId } from '../../modules/auth/decorators/get-user';
+import { UserAccountService } from '../../services/user-account/user-account.service';
 import {
   UpdateEmailDto,
   UpdatePasswordDto,

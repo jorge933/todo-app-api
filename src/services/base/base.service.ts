@@ -1,8 +1,8 @@
 import { FilterQuery, SortOrder, UpdateQuery } from 'mongoose';
-import { date } from 'src/helpers/date';
-import { like } from 'src/helpers/like';
-import { Filters, Pagination } from 'src/interfaces/queries';
-import { BaseRepository } from 'src/repositories/base/base.repository';
+import { date } from '../../helpers/date';
+import { like } from '../../helpers/like';
+import { Filters, Pagination } from '../../interfaces/queries';
+import { BaseRepository } from '../../repositories/base/base.repository';
 
 export class BaseService<T> {
   operators = {

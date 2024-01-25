@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { transformID } from 'src/helpers/id-transformer';
+import { transformID } from '../helpers/id-transformer';
 import { TeamMember } from './team-members.schema';
 
 export type TeamDocument = HydratedDocument<Team>;
