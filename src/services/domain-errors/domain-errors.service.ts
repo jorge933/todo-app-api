@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { HttpTypeErrors } from 'src/enums/http-type-errors';
+import { HttpTypeErrors } from '../../enums/http-type-errors';
 export interface Error {
   message: string;
   type: HttpTypeErrors;
