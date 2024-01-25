@@ -20,30 +20,37 @@ export class BaseService<T> {
     expression: FilterQuery<T>,
     queryOptions?: { [key: string]: string },
   ) {
-    const { sort, page, size } = queryOptions;
+    const options = this.getQueryOptions(queryOptions);
+
+    const query = await this.baseRepository.find({
+      expression,
+      ...options,
+    });
+
+    return query;
+  }
+
+  getQueryOptions(queryOptions: { [key: string]: string }) {
+    if (!queryOptions) return {};
+    let { sort, page, size } = queryOptions;
+
     const sortTransformed = this.transformSort(sort);
-
-    delete queryOptions.sort;
-    delete queryOptions.page;
-    delete queryOptions.size;
-
-    const filters = this.transformFilters(
-      queryOptions as { [key: string]: string },
-    );
-
     const pagination: Pagination = {
       page: Number(page) || 0,
       size: Number(size) || 10,
     };
 
-    const query = await this.baseRepository.find({
-      expression,
-      filters,
-      sort: sortTransformed ?? {},
-      pagination,
-    });
+    delete queryOptions.sort;
+    delete queryOptions.page;
+    delete queryOptions.size;
 
-    return query;
+    const filters = this.transformFilters(queryOptions);
+
+    return {
+      sort: sortTransformed ?? {},
+      filters,
+      pagination,
+    };
   }
 
   async findOne(filter: FilterQuery<T>) {
@@ -59,7 +66,7 @@ export class BaseService<T> {
     };
   }
 
-  transformFilters(filters: { [key: string]: string }) {
+  transformFilters(filters: { [key: string]: string }, fieldPrefix?: string) {
     if (!filters) return;
 
     const entries = Object.entries(filters);
@@ -74,10 +81,11 @@ export class BaseService<T> {
               $lt: this.execOperator(value[1], 'end'),
             }
           : this.execOperator(value);
+        const prefix = fieldPrefix ? fieldPrefix + '.' : '';
 
         return {
           ...previousValue,
-          [key]: filterValue,
+          [`${prefix + key}`]: filterValue,
         };
       },
       {},
@@ -101,5 +109,20 @@ export class BaseService<T> {
     return await this.baseRepository.updateOne(filter, {
       $set: fieldsToUpdate,
     });
+  }
+
+  getAggregateOptions(queryOptions: { [key: string]: string }) {
+    if (!queryOptions) return {};
+    let { page = 0, size = 10 } = queryOptions;
+
+    const pagination: Pagination = {
+      page: Number(page),
+      size: Number(size),
+    };
+
+    return [
+      { $skip: pagination.page * pagination.size },
+      { $limit: pagination.size },
+    ];
   }
 }

@@ -1,4 +1,10 @@
-import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  PipelineStage,
+  QueryOptions,
+  UpdateQuery,
+} from 'mongoose';
 import { FindAllParams } from '../../interfaces/queries';
 
 export class BaseRepository<T> {
@@ -28,7 +34,7 @@ export class BaseRepository<T> {
     const { page: skip, size: limit } = pagination ?? {};
     const options: QueryOptions = {
       sort,
-      skip,
+      skip: skip * limit,
       limit,
     };
 
@@ -46,5 +52,9 @@ export class BaseRepository<T> {
 
   async deleteOne(filter?: FilterQuery<T>) {
     return await this.model.deleteOne(filter).exec();
+  }
+
+  async aggregate(pipeline: PipelineStage[]) {
+    return await this.model.aggregate(pipeline);
   }
 }

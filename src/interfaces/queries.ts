@@ -1,4 +1,4 @@
-import { FilterQuery, SortOrder } from 'mongoose';
+import { FilterQuery, PopulateOptions, SortOrder } from 'mongoose';
 
 export interface Pagination {
   page: number;
@@ -9,7 +9,7 @@ export interface FindAllParams<T> {
   expression: FilterQuery<T>;
   filters?: Filters;
   sort?: { [key: string]: SortOrder };
-  populate?: string | string[];
+  populate?: PopulateOptions | (string | PopulateOptions)[];
   select?: string | string[];
   pagination?: Pagination;
 }
