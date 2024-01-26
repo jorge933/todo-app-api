@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { TeamsService } from '../../services/teams/teams.service';
-import { CreateTeamDto } from './teams.dto';
+import { AddUserInTeamDto, CreateTeamDto } from './teams.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -21,5 +21,13 @@ export class TeamsController {
     @Query() queryOptions?: { [key: string]: string },
   ) {
     return this.teamsService.getUserTeams(userId, queryOptions);
+  }
+
+  @Post('add-user')
+  async addUserInTeam(
+    @GetUserId() userId: number,
+    @Body() userToAdd: AddUserInTeamDto,
+  ) {
+    return await this.teamsService.addUserInTeam(userId, userToAdd);
   }
 }
