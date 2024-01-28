@@ -66,7 +66,10 @@ export class BaseService<T> {
     };
   }
 
-  transformFilters(filters: { [key: string]: string }, fieldPrefix?: string) {
+  transformFilters(
+    filters: { [key: string]: string | string[] },
+    fieldPrefix?: string,
+  ) {
     if (!filters) return;
 
     const entries = Object.entries(filters);
