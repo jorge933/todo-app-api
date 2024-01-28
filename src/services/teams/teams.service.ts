@@ -98,20 +98,9 @@ export class TeamsService extends BaseService<Team> {
 
   private async verifyIfCanAddUser(
     userWhoIsAdding: number,
-    user: User,
+    idOfUserToAdd: number,
     teamId: number,
   ) {
-    if (!user) {
-      this.domainErrorsService.addError(
-        {
-          message: 'Este usuário não existe!',
-          type: HttpTypeErrors.NON_EXISTING_USER,
-        },
-        HttpStatus.UNAUTHORIZED,
-      );
-      return;
-    }
-
     const roleOfUser = await this.teamMembersRepository.findOne({
       memberId: userWhoIsAdding,
       teamId,
@@ -130,7 +119,7 @@ export class TeamsService extends BaseService<Team> {
     }
 
     const userAlreadyParticipant = await this.teamMembersRepository.findOne({
-      memberId: user.id,
+      memberId: idOfUserToAdd,
       teamId,
     });
 

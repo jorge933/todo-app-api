@@ -18,6 +18,7 @@ import { TasksService } from './services/tasks/tasks.service';
 import { TeamsService } from './services/teams/teams.service';
 import { UserAccountService } from './services/user-account/user-account.service';
 import { ExistTeamValidation } from './decorators/exist-team.decorator';
+import { ExistUserValidation } from './decorators/exist-user.decorator';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ExistTeamValidation } from './decorators/exist-team.decorator';
     UserAccountService,
     TeamsService,
     ExistTeamValidation,
+    ExistUserValidation,
   ],
 })
 export class AppModule {}
