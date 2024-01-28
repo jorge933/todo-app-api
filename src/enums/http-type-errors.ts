@@ -6,6 +6,7 @@ export enum HttpTypeErrors {
   NO_DOCUMENTS_ALTERED = 'noDocumentsAltered',
   NON_EXISTING_TEAM = 'nonExistingTeam',
   NON_EXISTING_USER = 'nonExistingUser',
-  NOT_ENOUGH_POSITION_TO_ADD_USER = 'notEnoughPositionToAddUser',
+  INSUFFICIENT_ROLE_TO_THIS_ACTION = 'insufficientRoleToThisAction',
   USER_ALREADY_PARTICIPANT = 'userAlreadyParticipant',
+  THE_USER_IS_ALREADY_ADMIN = 'userAlreadyParticipant',
 }

@@ -29,11 +29,16 @@ export class AddUserInTeamDto {
   }
 }
 
+export class PromoteUserRoleDto {
+  @IsString()
+  @IsNotEmpty()
+  userToPromote: string | number;
+
   @IsNumber()
   teamId: number;
 
-  constructor(userId: string, teamId: number) {
-    this.credentialOfUserToAdd = userId;
+  constructor(userToPromote: string, teamId: number) {
+    this.userToPromote = userToPromote;
     this.teamId = teamId;
   }
 }

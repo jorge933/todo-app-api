@@ -1,7 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { TeamsService } from '../../services/teams/teams.service';
-import { AddUserInTeamDto, CreateTeamDto } from './teams.dto';
+import {
+  AddUserInTeamDto,
+  CreateTeamDto,
+  PromoteUserRoleDto,
+} from './teams.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -29,5 +33,13 @@ export class TeamsController {
     @Body() userToAdd: AddUserInTeamDto,
   ) {
     return await this.teamsService.addUserInTeam(userId, userToAdd);
+  }
+
+  @Post('promote-user')
+  async promoteUserRole(
+    @GetUserId() userId: number,
+    @Body() userToPromote: PromoteUserRoleDto,
+  ) {
+    return await this.teamsService.promoteUserRole(userId, userToPromote);
   }
 }
