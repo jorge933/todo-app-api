@@ -18,16 +18,20 @@ export class UserAccountService extends BaseService<User> {
 
   async updateUserCredential<PropToUpdate extends keyof User>(
     userId: number,
-    credential: Pick<User, PropToUpdate>,
-    fieldToUpdateIsUnique: boolean = true,
+    newCredential: Pick<User, PropToUpdate>,
+    fieldToUpdateIsUnique = true,
   ) {
-    const [property] = Object.keys(credential);
+    const [property] = Object.keys(newCredential);
+
+    const value = fieldToUpdateIsUnique
+      ? newCredential[property].toLowerCase()
+      : newCredential[property];
 
     const newCredentialValue = {
-      [property]: fieldToUpdateIsUnique
-        ? credential[property].toLowerCase()
-        : credential[property],
+      [property]: value,
     };
+
+    console.log(newCredentialValue);
 
     const existUserWithCredential = await this.findOne(newCredentialValue);
 

@@ -1,97 +1,108 @@
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/schemas/user.schema';
-import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
-import { UserAccountService } from './user-account.service';
-import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { HttpTypeErrors } from '../../enums/http-type-errors';
+import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
+import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
+import { UserAccountService } from './user-account.service';
+import { User, UserDocument } from 'src/schemas/user.schema';
+import { UserRepository } from 'src/repositories/user/user.repository';
 
-type UserPromise = Promise<
-  Document<any, {}, User> & User & Required<{ _id: number }>
->;
-
-describe('UserService', () => {
+describe('UserAccountService', () => {
   let service: UserAccountService;
-  let credentials: User;
+  let domainErrorsService: DomainErrorsService;
+  let mockUserRepository: UserRepository;
+  let existingUser: Pick<User, '_id' | 'username' | 'password'>;
 
   const userId = 1;
+  const updateUserDto = { username: 'newusername' };
+  const updatePasswordDto = {
+    password: 'oldPassword',
+    newPassword: 'newPassword',
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserAccountService, ...UNIT_OF_WORK_PROVIDERS],
+      providers: [
+        UserAccountService,
+        {
+          provide: UnitOfWorkService,
+          useValue: {
+            userRepository: {
+              findOne: jest.fn(),
+            },
+            domainErrorsService: {
+              addError: jest.fn(),
+            },
+          },
+        },
+      ],
     }).compile();
 
-    service = module.get<UserAccountService>(UserAccountService);
-    credentials = {
-      id: 2,
-      username: 'jorge',
-      email: 'jorge@gmeail.com',
-      password: await bcrypt.hash('jorge', 10),
+    existingUser = {
+      _id: userId,
+      username: 'existingUser',
+      password: await bcrypt.hash('oldPassword', 10),
     };
+
+    const unitOfWorkService = module.get<UnitOfWorkService>(UnitOfWorkService);
+
+    service = module.get<UserAccountService>(UserAccountService);
+    domainErrorsService = unitOfWorkService.domainErrorsService;
+    mockUserRepository = unitOfWorkService.userRepository;
 
     jest.spyOn(service, 'updateOne').mockImplementation(jest.fn());
   });
 
-  it('should update user credential and return the new value', async () => {
-    const newUsername = { username: 'test' };
-
-    jest.spyOn(service, 'findOne').mockReturnValue(Promise.resolve(null));
-
-    expect(newUsername).toEqual(
-      await service.updateUserCredential(userId, newUsername),
-    );
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should not update the username and return undefined', async () => {
-    const newUsername = { username: 'test' };
+  it('should update user credential successfully', async () => {
+    jest.spyOn(service, 'findOne').mockResolvedValueOnce(null);
 
+    const result = await service.updateUserCredential(userId, updateUserDto);
+
+    expect(result).toEqual(updateUserDto);
+  });
+
+  it('should handle already registered credential', async () => {
     jest
       .spyOn(service, 'findOne')
-      .mockReturnValue(Promise.resolve(credentials) as UserPromise);
+      .mockResolvedValueOnce(existingUser as UserDocument);
 
-    const expectedReturn = undefined;
+    await service.updateUserCredential(userId, updateUserDto);
 
-    expect(expectedReturn).toBe(
-      await service.updateUserCredential(userId, newUsername),
+    expect(domainErrorsService.addError).toHaveBeenCalledWith(
+      {
+        message: `Este username já foi registrado!`,
+        type: HttpTypeErrors.ALREADY_BEEN_REGISTERED,
+      },
+      HttpStatus.UNAUTHORIZED,
     );
   });
 
-  it('should update the user password and return success message', async () => {
-    const newPassword = { password: 'jorge', newPassword: 'jorgee' };
-
+  it('should update user password successfully', async () => {
     jest
       .spyOn(service, 'findOne')
-      .mockReturnValue(Promise.resolve(credentials) as UserPromise);
+      .mockResolvedValue(existingUser as UserDocument);
 
-    const expectedReturn = { message: 'Senha atualizada!' };
+    const result = await service.updatePassword(userId, updatePasswordDto);
 
-    expect(expectedReturn).toEqual(
-      await service.updatePassword(userId, newPassword),
-    );
+    expect(result).toEqual({ message: 'Senha atualizada!' });
   });
 
-  it('must check that the passwords are not the same and return undefined', async () => {
-    const newPassword = { password: 'invalid', newPassword: 'jorge' };
+  it('should handle invalid credentials when updating password', async () => {
+    jest.spyOn(service, 'findOne').mockResolvedValueOnce(null);
 
-    jest
-      .spyOn(service, 'findOne')
-      .mockReturnValue(Promise.resolve(credentials) as UserPromise);
+    await service.updatePassword(userId, updatePasswordDto);
 
-    const expectedReturn = undefined;
-
-    expect(expectedReturn).toBe(
-      await service.updatePassword(userId, newPassword),
-    );
-  });
-
-  it('should check that the credentials are invalid and return undefined', async () => {
-    const newPassword = { password: 'invalid', newPassword: 'jorge' };
-
-    jest.spyOn(service, 'findOne').mockReturnValue(Promise.resolve(null));
-
-    const expectedReturn = undefined;
-
-    expect(expectedReturn).toBe(
-      await service.updatePassword(userId, newPassword),
+    expect(domainErrorsService.addError).toHaveBeenCalledWith(
+      {
+        message: 'Credenciais inválidas!',
+        type: HttpTypeErrors.INVALID_CREDENTIALS,
+      },
+      HttpStatus.UNAUTHORIZED,
     );
   });
 });
