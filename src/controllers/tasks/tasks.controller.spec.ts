@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Document } from 'mongoose';
+import { UpdateWriteOpResult } from 'mongoose';
 import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
 import { TaskPriority } from '../../enums/task-priority';
-import { Task, TaskDocument } from '../../schemas/task.schema';
+import { TaskDocument } from '../../schemas/task.schema';
 import { TasksService } from '../../services/tasks/tasks.service';
-import { TasksController } from './tasks.controller';
 import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
+import { TasksController } from './tasks.controller';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -14,16 +14,20 @@ describe('TasksController', () => {
   const userId = 1;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [TasksController],
       providers: [TasksService, ...UNIT_OF_WORK_PROVIDERS],
     }).compile();
 
-    tasksService = app.get<TasksService>(TasksService);
-    controller = app.get<TasksController>(TasksController);
+    controller = module.get<TasksController>(TasksController);
+    tasksService = module.get<TasksService>(TasksService);
   });
 
-  it('should be return user tasks', async () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should get user tasks', async () => {
     const tasks = [
       {
         id: 1,
@@ -34,64 +38,46 @@ describe('TasksController', () => {
       },
     ];
 
-    jest
-      .spyOn(tasksService, 'find')
-      .mockReturnValue(
-        Promise.resolve(tasks) as Promise<
-          (Document<unknown, {}, Task> & Task & Required<{ _id: number }>)[]
-        >,
-      );
+    jest.spyOn(tasksService, 'find').mockResolvedValue(tasks as TaskDocument[]);
 
-    expect(tasks).toBe(await controller.getAll(userId));
+    expect(await controller.getAll(userId)).toBe(tasks);
   });
 
-  it('should be create and task', async () => {
-    const newTaskInfos = new CreateTaskDto('read', TaskPriority.LOW);
-    const createdTask = {
-      id: 1,
-      ...newTaskInfos,
-      completed: false,
-    } as TaskDocument;
+  it('should create a task with valid priority', async () => {
+    const newTask: CreateTaskDto = {
+      name: 'Read',
+      priority: TaskPriority.MEDIUM,
+    };
+    const createdTask = { id: 1, ...newTask, completed: false };
 
     jest
       .spyOn(tasksService, 'create')
-      .mockReturnValue(Promise.resolve(createdTask));
+      .mockResolvedValue(createdTask as TaskDocument);
 
-    expect(createdTask).toEqual(await controller.create(userId, newTaskInfos));
+    expect(await controller.create(userId, newTask)).toEqual(createdTask);
   });
 
-  it('should be delete task and return result', async () => {
-    const taskDeleteDto = new DeleteTaskDto(1);
-    const deletedResult = {
-      acknowledged: true,
-      deletedCount: 1,
-    };
+  it('should delete a task', async () => {
+    const taskDeleteDto: DeleteTaskDto = { id: 1 };
+    const deleteResult = { acknowledged: true, deletedCount: 1 };
 
-    jest
-      .spyOn(tasksService, 'delete')
-      .mockReturnValue(Promise.resolve(deletedResult));
+    jest.spyOn(tasksService, 'delete').mockResolvedValue(deleteResult);
 
-    expect(deletedResult).toEqual(
-      await controller.delete(userId, taskDeleteDto),
+    expect(await controller.delete(userId, taskDeleteDto)).toEqual(
+      deleteResult,
     );
   });
 
-  it('should be delete task and return result', async () => {
-    const editTaskNameDto = new EditTaskNameDto(1, 'write');
-    const editResult = {
-      acknowledged: true,
-      modifiedCount: 1,
-      upsertedId: null,
-      upsertedCount: 0,
-      matchedCount: 1,
-    };
+  it('should edit a task name', async () => {
+    const editTaskNameDto: EditTaskNameDto = { id: 1, newName: 'Write' };
+    const editResult = { acknowledged: true, modifiedCount: 1 };
 
     jest
       .spyOn(tasksService, 'updateOne')
-      .mockReturnValue(Promise.resolve(editResult));
+      .mockResolvedValue(editResult as UpdateWriteOpResult);
 
-    expect(editResult).toEqual(
-      await controller.editTaskName(userId, editTaskNameDto),
+    expect(await controller.editTaskName(userId, editTaskNameDto)).toEqual(
+      editResult,
     );
   });
 });
