@@ -112,19 +112,6 @@ export class TeamsService extends BaseService<Team> {
       return;
     }
 
-    const team = await this.findOne({ _id: teamId });
-
-    if (!team) {
-      this.domainErrorsService.addError(
-        {
-          message: 'Este time não existe!',
-          type: HttpTypeErrors.NON_EXISTING_TEAM,
-        },
-        HttpStatus.UNAUTHORIZED,
-      );
-      return;
-    }
-
     const roleOfUser = await this.teamMembersRepository.findOne({
       memberId: userWhoIsAdding,
       teamId,

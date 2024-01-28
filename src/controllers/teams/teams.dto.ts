@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
-import { TeamRoles } from 'src/enums/team-roles';
+import { IsValidTeam } from 'src/decorators/exist-team.decorator';
 
 export class CreateTeamDto {
   @IsString()
@@ -15,7 +15,18 @@ export class CreateTeamDto {
 export class AddUserInTeamDto {
   @IsString()
   @IsNotEmpty()
-  credentialOfUserToAdd: string;
+  @IsValidUser()
+  userToAdd: string;
+
+  @IsNumber()
+  @IsValidTeam()
+  teamId: number;
+
+  constructor(userToAdd: string, teamId: number) {
+    this.userToAdd = userToAdd;
+    this.teamId = teamId;
+  }
+}
 
   @IsNumber()
   teamId: number;

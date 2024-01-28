@@ -17,6 +17,7 @@ import { UserAccountController } from './controllers/user-account/user-account.c
 import { TasksService } from './services/tasks/tasks.service';
 import { TeamsService } from './services/teams/teams.service';
 import { UserAccountService } from './services/user-account/user-account.service';
+import { ExistTeamValidation } from './decorators/exist-team.decorator';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UserAccountService } from './services/user-account/user-account.service
     TasksService,
     UserAccountService,
     TeamsService,
+    ExistTeamValidation,
   ],
 })
 export class AppModule {}
