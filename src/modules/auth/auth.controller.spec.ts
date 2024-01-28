@@ -1,70 +1,82 @@
-import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
-import { UnitOfWorkModule } from '../unit-of-work/unit-of-work.module';
+import { UserDocument } from '../../schemas/user.schema';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login.dto';
 
-fdescribe('AuthController', () => {
-  let authController: AuthController;
+describe('AuthController', () => {
+  let controller: AuthController;
   let authService: AuthService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-        JwtModule.register({
-          secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '12h' },
-        }),
-      ],
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         {
           provide: AuthService,
           useValue: {
-            create: jest
-              .fn()
-              .mockImplementation((user: CreateUserDto) =>
-                Promise.resolve({ _id: new Types.ObjectId() }),
-              ),
-            login: jest
-              .fn()
-              .mockImplementation((user: LoginUserDto) =>
-                Promise.resolve({ _id: new Types.ObjectId() }),
-              ),
+            createUser: jest.fn(),
+            login: jest.fn(),
           },
         },
       ],
     }).compile();
-    authService = app.get<AuthService>(AuthService);
-    authController = app.get<AuthController>(AuthController);
+
+    controller = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
   });
 
-  it('should create and return jwt token string', async () => {
-    const userDto = {
-      username: 'jorge',
-      email: 'jorge@gmail.com',
-      password: 'jorge',
+  it('should create user and return user details and token', async () => {
+    const newUser: CreateUserDto = {
+      username: 'user',
+      email: 'test@test.com',
+      password: 'user123',
     };
 
-    const result = await authController.createUser(userDto);
+    jest.spyOn(authService, 'createUser').mockResolvedValue({
+      token: 'jwt_mock_token',
+      user: {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+      } as UserDocument,
+    });
 
-    expect(typeof result).toBe('string');
+    const result = await controller.createUser(newUser);
+    const expectedUser = {
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+    };
+
+    expect(typeof result.token).toBe('string');
+    expect(result.user).toEqual(expectedUser);
   });
 
-  it('should return a jwt token string', async () => {
-    const userCredentials = {
-      login: 'jorge@gmail.com',
-      password: 'jorge',
+  it('should login user and return user details and token', async () => {
+    const credentials: LoginUserDto = {
+      login: 'user',
+      password: 'password',
     };
 
-    const result = await authController.login(userCredentials);
+    jest.spyOn(authService, 'login').mockResolvedValue({
+      token: 'jwt_mock_token',
+      user: {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+      } as UserDocument,
+    });
 
-    expect(typeof result).toBe('string');
+    const result = await controller.login(credentials);
+    const expectedUser = {
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+    };
+
+    expect(typeof result.token).toBe('string');
+    expect(result.user).toEqual(expectedUser);
   });
 });
