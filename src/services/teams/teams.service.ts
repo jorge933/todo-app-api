@@ -75,26 +75,21 @@ export class TeamsService extends BaseService<Team> {
     return await this.teamMembersRepository.aggregate(aggregateOptions);
   }
 
-  async addUserInTeam(userId: number, userToAdd: AddUserInTeamDto) {
-    const user = await this.unitOfWork.userRepository.findOne({
-      $or: [
-        { _id: Number(userToAdd.credentialOfUserToAdd) || -1 },
-        { username: userToAdd.credentialOfUserToAdd },
-        { email: userToAdd.credentialOfUserToAdd },
-      ],
-    });
-
-    const canAddUser = await this.verifyIfCanAddUser(
-      userId,
-      user,
-      userToAdd.teamId,
+  async addUserInTeam(
+    userId: number,
+    { userToAdd: credentialOfUserToAdd, teamId }: AddUserInTeamDto,
+  ) {
+    const userToAdd = await this.findUserByAllIdentifiers(
+      credentialOfUserToAdd,
     );
+
+    const canAddUser = await this.verifyIfCanAddUser(userId, userToAdd, teamId);
 
     if (!canAddUser) return;
 
     this.teamMembersRepository.create({
-      memberId: user.id,
-      teamId: userToAdd.teamId,
+      memberId: userToAdd.id,
+      teamId: teamId,
       role: TeamRoles.MEMBER,
     });
 
@@ -164,5 +159,16 @@ export class TeamsService extends BaseService<Team> {
     }
 
     return true;
+  }
+
+  async findUserByAllIdentifiers(credential: unknown) {
+    const user = await this.unitOfWork.userRepository.findOne({
+      $or: [
+        { _id: Number(credential) || -1 },
+        { username: credential },
+        { email: credential },
+      ],
+    });
+    return user;
   }
 }
