@@ -1,18 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAccountController } from './user-account.controller';
 import { UserAccountService } from '../../services/user-account/user-account.service';
+import { UpdateUsernameDto, UpdatePasswordDto } from './update-credentials.dto';
 import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
-import {
-  UpdateEmailDto,
-  UpdatePasswordDto,
-  UpdateUsernameDto,
-} from './update-credentials.dto';
 
-describe('UsersController', () => {
+describe('UserAccountController', () => {
   let controller: UserAccountController;
-  let userAccountService: UserAccountService;
-
-  const userId = 1;
+  let userService: UserAccountService;
+  let userId: number = 1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,41 +16,61 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UserAccountController>(UserAccountController);
-    userAccountService = module.get<UserAccountService>(UserAccountService);
+    userService = module.get<UserAccountService>(UserAccountService);
   });
 
-  it('should update the username and return the new username', async () => {
-    const newUsername = new UpdateUsernameDto('test');
+  it('should change username successfully', async () => {
+    const newUsername = { username: 'newUsername' };
+    const expectedResult = { username: newUsername.username };
 
     jest
-      .spyOn(userAccountService, 'updateUserCredential')
-      .mockReturnValue(Promise.resolve(newUsername));
+      .spyOn(userService, 'updateUserCredential')
+      .mockResolvedValue(expectedResult);
 
-    expect(newUsername).toEqual(
-      await controller.changeUsername(userId, newUsername),
-    );
+    const result = await controller.changeUsername(userId, newUsername);
+
+    expect(result).toEqual(expectedResult);
   });
 
-  it('should update the user email and return the new email', async () => {
-    const newEmail = new UpdateEmailDto('test@test.com');
+  it('should handle error when username is already taken', async () => {
+    const existingUsername = 'existingUsername';
 
     jest
-      .spyOn(userAccountService, 'updateUserCredential')
-      .mockReturnValue(Promise.resolve(newEmail));
+      .spyOn(userService, 'updateUserCredential')
+      .mockResolvedValue(undefined);
 
-    expect(newEmail).toEqual(await controller.changeEmail(userId, newEmail));
+    const result = await controller.changeUsername(userId, {
+      username: existingUsername,
+    });
+
+    expect(result).toBeUndefined();
   });
 
-  it('should update the user password and return a message', async () => {
-    const newPassword = new UpdatePasswordDto('currentPassword', 'newPassword');
-    const expectedMessage = { message: 'Senha atualizada!' };
+  it('should change password successfully', async () => {
+    const newPassword: UpdatePasswordDto = {
+      password: 'oldPassword',
+      newPassword: 'newPassword',
+    };
+    const expectedResult = { message: 'Senha atualizada!' };
 
-    jest
-      .spyOn(userAccountService, 'updatePassword')
-      .mockReturnValue(Promise.resolve(expectedMessage));
+    jest.spyOn(userService, 'updatePassword').mockResolvedValue(expectedResult);
 
-    expect(await controller.changePassword(userId, newPassword)).toEqual(
-      expectedMessage,
-    );
+    const result = await controller.changePassword(userId, newPassword);
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  it('should handle error when password is incorrect', async () => {
+    const incorrectPassword = 'incorrectPassword';
+    const newPassword = 'newPassword';
+
+    jest.spyOn(userService, 'updatePassword').mockResolvedValue(undefined);
+
+    const result = await controller.changePassword(userId, {
+      password: incorrectPassword,
+      newPassword,
+    });
+
+    expect(result).toBeUndefined();
   });
 });
