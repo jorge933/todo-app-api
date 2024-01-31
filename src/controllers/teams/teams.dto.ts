@@ -13,32 +13,32 @@ export class CreateTeamDto {
   }
 }
 
-export class AddUserInTeamDto {
-  @IsString()
+export class UserAndTeamDto {
   @IsNotEmpty()
   @IsValidUser()
-  userToAdd: string;
+  credential: string;
 
   @IsNumber()
   @IsValidTeam()
   teamId: number;
 
-  constructor(userToAdd: string, teamId: number) {
-    this.userToAdd = userToAdd;
+  constructor(credential: string, teamId: number) {
+    this.credential = credential;
     this.teamId = teamId;
   }
 }
 
-export class PromoteUserRoleDto {
-  @IsString()
+export class RemoveUserDto {
+  @IsNumber()
   @IsNotEmpty()
-  userToPromote: string | number;
+  id: number;
 
   @IsNumber()
+  @IsValidTeam()
   teamId: number;
 
-  constructor(userToPromote: string, teamId: number) {
-    this.userToPromote = userToPromote;
+  constructor(id: number, teamId: number) {
+    this.id = id;
     this.teamId = teamId;
   }
 }

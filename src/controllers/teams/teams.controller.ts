@@ -1,45 +1,51 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { TeamsService } from '../../services/teams/teams.service';
-import {
-  AddUserInTeamDto,
-  CreateTeamDto,
-  PromoteUserRoleDto,
-} from './teams.dto';
+import { UserAndTeamDto, CreateTeamDto } from './teams.dto';
 
 @Controller('teams')
 export class TeamsController {
   constructor(private teamsService: TeamsService) {}
 
   @Post('create')
-  async createTeam(@GetUserId() userId: number, @Body() team: CreateTeamDto) {
-    return await this.teamsService.createTeam({
-      owner: userId,
-      name: team.name,
-    });
+  async createTeam(
+    @GetUserId() userId: number,
+    @Body() { name }: CreateTeamDto,
+  ) {
+    const teamCreated = await this.teamsService.createTeam(userId, name);
+    return teamCreated;
   }
 
   @Get('')
-  getUserTeams(
+  async getUserTeams(
     @GetUserId() userId: number,
-    @Query() queryOptions?: { [key: string]: string },
+    @Query() queryOptions: { [key: string]: string },
   ) {
-    return this.teamsService.getUserTeams(userId, queryOptions);
+    const teams = await this.teamsService.getUserTeams(userId, queryOptions);
+    return teams;
   }
 
-  @Post('add-user')
+  @Post('user/add')
   async addUserInTeam(
     @GetUserId() userId: number,
-    @Body() userToAdd: AddUserInTeamDto,
+    @Body() userToAddAndTeam: UserAndTeamDto,
   ) {
-    return await this.teamsService.addUserInTeam(userId, userToAdd);
+    const userAdded = await this.teamsService.addUserInTeam(
+      userId,
+      userToAddAndTeam,
+    );
+    return userAdded;
   }
 
-  @Post('promote-user')
-  async promoteUserRole(
+  @Post('user/promote')
+  async promoteUser(
     @GetUserId() userId: number,
-    @Body() userToPromote: PromoteUserRoleDto,
+    @Body() userToPromoteAndTeam: UserAndTeamDto,
   ) {
-    return await this.teamsService.promoteUserRole(userId, userToPromote);
+    const userPromoted = await this.teamsService.promoteUserRole(
+      userId,
+      userToPromoteAndTeam,
+    );
+    return userPromoted;
   }
 }
