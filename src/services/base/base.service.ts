@@ -1,4 +1,4 @@
-import { FilterQuery, SortOrder, UpdateQuery } from 'mongoose';
+import { FilterQuery, PipelineStage, SortOrder, UpdateQuery } from 'mongoose';
 import { date } from '../../helpers/date';
 import { like } from '../../helpers/like';
 import { Filters, Pagination } from '../../interfaces/queries';
@@ -30,14 +30,28 @@ export class BaseService<T> {
     return query;
   }
 
+  async findOne(filter: FilterQuery<T>) {
+    return await this.baseRepository.findOne(filter);
+  }
+
+  async delete(filter: FilterQuery<T>) {
+    return await this.baseRepository.deleteOne(filter);
+  }
+
+  async updateOne(filter: FilterQuery<T>, fieldsToUpdate: UpdateQuery<T>) {
+    return await this.baseRepository.updateOne(filter, {
+      $set: fieldsToUpdate,
+    });
+  }
+
   getQueryOptions(queryOptions: { [key: string]: string }) {
     if (!queryOptions) return {};
-    let { sort, page, size } = queryOptions;
+    let { sort, page = 0, size = 10 } = queryOptions;
 
     const sortTransformed = this.transformSort(sort);
     const pagination: Pagination = {
-      page: Number(page) || 0,
-      size: Number(size) || 10,
+      page: Number(page),
+      size: Number(size),
     };
 
     delete queryOptions.sort;
@@ -53,8 +67,47 @@ export class BaseService<T> {
     };
   }
 
-  async findOne(filter: FilterQuery<T>) {
-    return await this.baseRepository.findOne(filter);
+  getAggregateOptions(queryOptions: {
+    [key: string]: string;
+  }): PipelineStage[] {
+    if (!queryOptions) return [];
+    const options = [];
+    let { page = 0, size = 10, sort } = queryOptions;
+
+    delete queryOptions.page;
+    delete queryOptions.size;
+    delete queryOptions.sort;
+
+    const filters = this.transformFilters(queryOptions) ?? {};
+
+    const pagination: Pagination = {
+      page: Number(page),
+      size: Number(size),
+    };
+
+    if (sort) {
+      const transformedSort = this.transformSort(sort, true) as Record<
+        string,
+        1 | -1
+      >;
+      options.push({
+        $sort: transformedSort,
+      });
+    }
+
+    options.push(
+      {
+        $skip: pagination.page * pagination.size,
+      },
+      {
+        $limit: pagination.size,
+      },
+      {
+        $match: filters,
+      },
+    );
+
+    return options;
   }
 
   transformSort(sort: string, isAggregate = false) {
@@ -72,10 +125,7 @@ export class BaseService<T> {
     return transformedSort;
   }
 
-  transformFilters(
-    filters: { [key: string]: string | string[] },
-    fieldPrefix?: string,
-  ) {
+  transformFilters(filters: { [key: string]: string | string[] }) {
     if (!filters) return;
 
     const entries = Object.entries(filters);
@@ -87,14 +137,13 @@ export class BaseService<T> {
         const filterValue = isArray
           ? {
               $gte: this.execOperator(value[0], 'start'),
-              $lt: this.execOperator(value[1], 'end'),
+              $lte: this.execOperator(value[1], 'end'),
             }
           : this.execOperator(value);
-        const prefix = fieldPrefix ? fieldPrefix + '.' : '';
 
         return {
           ...previousValue,
-          [`${prefix + key}`]: filterValue,
+          [key]: filterValue,
         };
       },
       {},
@@ -108,30 +157,5 @@ export class BaseService<T> {
     const operatorFunction = this.operators[operator];
 
     return operatorFunction ? operatorFunction(value, option) : value;
-  }
-
-  async delete(filter: FilterQuery<T>) {
-    return await this.baseRepository.deleteOne(filter);
-  }
-
-  async updateOne(filter: FilterQuery<T>, fieldsToUpdate: UpdateQuery<T>) {
-    return await this.baseRepository.updateOne(filter, {
-      $set: fieldsToUpdate,
-    });
-  }
-
-  getAggregateOptions(queryOptions: { [key: string]: string }) {
-    if (!queryOptions) return {};
-    let { page = 0, size = 10 } = queryOptions;
-
-    const pagination: Pagination = {
-      page: Number(page),
-      size: Number(size),
-    };
-
-    return [
-      { $skip: pagination.page * pagination.size },
-      { $limit: pagination.size },
-    ];
   }
 }
