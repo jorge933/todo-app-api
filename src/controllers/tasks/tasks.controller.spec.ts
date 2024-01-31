@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UpdateWriteOpResult } from 'mongoose';
 import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
 import { TaskPriority } from '../../enums/task-priority';
 import { TaskDocument } from '../../schemas/task.schema';
@@ -68,16 +67,26 @@ describe('TasksController', () => {
     );
   });
 
-  it('should edit a task name', async () => {
-    const editTaskNameDto: EditTaskDto = { id: 1, newName: 'Write' };
-    const editResult = { acknowledged: true, modifiedCount: 1 };
+  it('should call tasksService.editTask and return success message', async () => {
+    const userId = 1;
+    const taskId = 123;
+    const editTaskDto: EditTaskDto = {
+      id: taskId,
+      name: 'Updated Task Name',
+      priority: TaskPriority.HIGH,
+    };
+    const expectedMessage = {
+      message: 'Tarefa atualizada com sucesso!',
+    } as any;
 
-    jest
-      .spyOn(tasksService, 'updateOne')
-      .mockResolvedValue(editResult as UpdateWriteOpResult);
+    jest.spyOn(tasksService, 'editTask').mockReturnValue(expectedMessage);
 
-    expect(await controller.editTask(userId, editTaskNameDto)).toEqual(
-      editResult,
-    );
+    const result = await controller.editTask(userId, editTaskDto);
+
+    expect(tasksService.editTask).toHaveBeenCalledWith(userId, taskId, {
+      name: editTaskDto.name,
+      priority: editTaskDto.priority,
+    });
+    expect(result).toEqual(expectedMessage);
   });
 });

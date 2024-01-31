@@ -32,11 +32,11 @@ export class TasksController {
   }
 
   @Post('edit')
-  editTask(
+  async editTask(
     @GetUserId() userId: number,
     @Body() { id, name, priority }: EditTaskDto,
   ) {
-    const taskEdited = this.tasksService.editTask(userId, id, {
+    const taskEdited = await this.tasksService.editTask(userId, id, {
       name,
       priority,
     });
