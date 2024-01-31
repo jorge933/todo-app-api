@@ -1,9 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PipelineStage } from 'mongoose';
-import { RemoveUserDto, UserAndTeamDto } from 'src/controllers/teams/teams.dto';
-import { HttpTypeErrors } from 'src/enums/http-type-errors';
-import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
-import { UserRepository } from 'src/repositories/user/user.repository';
+import {
+  RemoveUserDto,
+  UserAndTeamDto,
+} from '../../controllers/teams/teams.dto';
+import { HttpTypeErrors } from '../../enums/http-type-errors';
+import { TeamMembersRepository } from '../../repositories/team-members/team-members.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { TeamRoles } from '../../enums/team-roles';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { Team } from '../../schemas/team.schema';

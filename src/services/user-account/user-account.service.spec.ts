@@ -5,8 +5,8 @@ import { HttpTypeErrors } from '../../enums/http-type-errors';
 import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.service';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { UserAccountService } from './user-account.service';
-import { User, UserDocument } from 'src/schemas/user.schema';
-import { UserRepository } from 'src/repositories/user/user.repository';
+import { User, UserDocument } from '../../schemas/user.schema';
+import { UserRepository } from '../../repositories/user/user.repository';
 
 describe('UserAccountService', () => {
   let service: UserAccountService;

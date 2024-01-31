@@ -1,4 +1,4 @@
-import { date } from 'src/helpers/date';
+import { date } from '../../helpers/date';
 import { BaseService } from './base.service';
 
 describe('BaseService', () => {

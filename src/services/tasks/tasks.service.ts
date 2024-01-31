@@ -21,6 +21,6 @@ export class TasksService extends BaseService<Task> {
     });
 
     this.updateOne({ owner: userId, _id: taskId }, fieldsToUpdate);
-    return { message: 'Task atualizada com sucesso' };
+    return { message: 'Tarefa atualizada com sucesso!' };
   }
 }

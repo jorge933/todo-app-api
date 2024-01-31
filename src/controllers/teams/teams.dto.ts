@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
-import { IsValidTeam } from 'src/decorators/exist-team.decorator';
-import { IsValidUser } from 'src/decorators/exist-user.decorator';
+import { IsValidTeam } from '../../decorators/exist-team.decorator';
+import { IsValidUser } from '../../decorators/exist-user.decorator';
 
 export class CreateTeamDto {
   @IsString()
