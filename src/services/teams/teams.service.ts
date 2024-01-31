@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PipelineStage } from 'mongoose';
-import { UserAndTeamDto } from 'src/controllers/teams/teams.dto';
+import { RemoveUserDto, UserAndTeamDto } from 'src/controllers/teams/teams.dto';
 import { HttpTypeErrors } from 'src/enums/http-type-errors';
 import { TeamMembersRepository } from 'src/repositories/team-members/team-members.repository';
 import { UserRepository } from 'src/repositories/user/user.repository';
@@ -144,6 +144,38 @@ export class TeamsService extends BaseService<Team> {
       { role: TeamRoles.ADMIN },
     );
     return { message: 'Usuário promovido com sucesso!' };
+  }
+
+  async removeUser(userId: number, { id, teamId }: RemoveUserDto) {
+    const userAreRemoving = await this.teamMembersRepository.findOne({
+      memberId: userId,
+      teamId,
+    });
+    const userToRemove = await this.teamMembersRepository.findOne({
+      memberId: id,
+      teamId,
+    });
+
+    if (!userToRemove || !userAreRemoving) {
+      this.domainErrorsService.addError(
+        {
+          message: 'Usuário inexistente neste time!',
+          type: HttpTypeErrors.NON_EXISTING_USER,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+      return;
+    }
+
+    const hasRole = this.userHasRoleToExecuteAction(
+      userAreRemoving.role,
+      userToRemove.role + 1,
+    );
+
+    if (!hasRole) return;
+
+    this.teamMembersRepository.deleteOne({ memberId: id, teamId });
+    return { message: 'Usuário removido com sucesso!' };
   }
 
   async getUser(credential: string) {

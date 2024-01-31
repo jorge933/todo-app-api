@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { TeamsService } from '../../services/teams/teams.service';
-import { UserAndTeamDto, CreateTeamDto } from './teams.dto';
+import { UserAndTeamDto, CreateTeamDto, RemoveUserDto } from './teams.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -47,5 +47,17 @@ export class TeamsController {
       userToPromoteAndTeam,
     );
     return userPromoted;
+  }
+
+  @Post('user/remove')
+  async removeUser(
+    @GetUserId() userId: number,
+    @Body() userToRemoveAndTeam: RemoveUserDto,
+  ) {
+    const userRemoved = await this.teamsService.removeUser(
+      userId,
+      userToRemoveAndTeam,
+    );
+    return userRemoved;
   }
 }
