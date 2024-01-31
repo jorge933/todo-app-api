@@ -13,13 +13,9 @@ import { UserRepository } from '../repositories/user/user.repository';
 export class ExistUserValidation implements ValidatorConstraintInterface {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async validate(credential: string | number): Promise<boolean> {
+  async validate(credential: string): Promise<boolean> {
     const user = await this.userRepository.findOne({
-      $or: [
-        { _id: Number(credential) || -1 },
-        { username: credential },
-        { email: credential },
-      ],
+      $or: [{ username: credential }, { email: credential }],
     });
 
     return !!user;
