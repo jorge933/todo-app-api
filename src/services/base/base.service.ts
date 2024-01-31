@@ -57,13 +57,19 @@ export class BaseService<T> {
     return await this.baseRepository.findOne(filter);
   }
 
-  transformSort(sort: string) {
+  transformSort(sort: string, isAggregate = false) {
     if (!sort) return;
-    const [property, order] = sort.split(',');
+    let [property, order] = sort.split(',') as [string, SortOrder];
 
-    return {
-      [property]: order as SortOrder,
+    const transformedSort = {
+      [property]: order,
     };
+
+    if (isAggregate) {
+      transformedSort[property] = order === 'asc' ? 1 : -1;
+    }
+
+    return transformedSort;
   }
 
   transformFilters(
