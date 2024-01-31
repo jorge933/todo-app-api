@@ -31,8 +31,6 @@ export class UserAccountService extends BaseService<User> {
       [property]: value,
     };
 
-    console.log(newCredentialValue);
-
     const existUserWithCredential = await this.findOne(newCredentialValue);
 
     if (existUserWithCredential && fieldToUpdateIsUnique) {
