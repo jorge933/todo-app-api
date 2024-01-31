@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { TeamRoles } from '../enums/team-roles';
+import { removeID } from 'src/helpers/id-remover';
 
 export type TeamMemberDocument = HydratedDocument<TeamMember>;
 
@@ -9,6 +10,12 @@ export type TeamMemberDocument = HydratedDocument<TeamMember>;
   autoIndex: true,
   versionKey: false,
   timestamps: true,
+  toJSON: {
+    transform: removeID,
+  },
+  toObject: {
+    transform: removeID,
+  },
 })
 export class TeamMember {
   _id?: Types.ObjectId;

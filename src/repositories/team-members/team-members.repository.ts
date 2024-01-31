@@ -13,10 +13,10 @@ export class TeamMembersRepository extends BaseRepository<TeamMember> {
   }
 
   async create(entity: TeamMember) {
-    const entityCreated = new this.model(entity);
+    const entityCreated = new this.teamMemberModel(entity);
 
     await entityCreated.save();
 
-    return entityCreated;
+    return entityCreated.toJSON();
   }
 }
