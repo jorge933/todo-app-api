@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
-import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
+import { CreateTaskDto, DeleteTaskDto, EditTaskDto } from './task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -32,14 +32,14 @@ export class TasksController {
   }
 
   @Post('edit')
-  editTaskName(
+  editTask(
     @GetUserId() userId: number,
-    @Body() { id, newName }: EditTaskNameDto,
+    @Body() { id, name, priority }: EditTaskDto,
   ) {
-    const tasks = this.tasksService.updateOne(
-      { owner: userId, _id: id },
-      { name: newName },
-    );
-    return tasks;
+    const taskEdited = this.tasksService.editTask(userId, id, {
+      name,
+      priority,
+    });
+    return taskEdited;
   }
 }

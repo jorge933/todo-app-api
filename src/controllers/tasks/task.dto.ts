@@ -2,16 +2,19 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { TaskPriority } from '../../enums/task-priority';
 
+const minLength = 1;
+const maxLength = 15;
 export class CreateTaskDto {
   @IsString()
-  @MinLength(1)
-  @MaxLength(15)
+  @MinLength(minLength)
+  @MaxLength(maxLength)
   name: string;
 
   @IsEnum(TaskPriority)
@@ -33,18 +36,23 @@ export class DeleteTaskDto {
   }
 }
 
-export class EditTaskNameDto {
+export class EditTaskDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
 
+  @IsOptional()
   @IsString()
-  @MinLength(1)
-  @MaxLength(15)
-  newName: string;
+  @MinLength(minLength)
+  @MaxLength(maxLength)
+  name?: string;
 
-  constructor(id: number, newName: string) {
-    this.id = id;
-    this.newName = newName;
+  @IsOptional()
+  @IsEnum(TaskPriority)
+  priority?: TaskPriority;
+
+  constructor(name?: string, priority?: TaskPriority) {
+    this.name = name;
+    this.priority = priority;
   }
 }

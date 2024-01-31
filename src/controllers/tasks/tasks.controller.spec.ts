@@ -4,7 +4,7 @@ import { UNIT_OF_WORK_PROVIDERS } from '../../constants/unit-of-work-providers';
 import { TaskPriority } from '../../enums/task-priority';
 import { TaskDocument } from '../../schemas/task.schema';
 import { TasksService } from '../../services/tasks/tasks.service';
-import { CreateTaskDto, DeleteTaskDto, EditTaskNameDto } from './task.dto';
+import { CreateTaskDto, DeleteTaskDto, EditTaskDto } from './task.dto';
 import { TasksController } from './tasks.controller';
 
 describe('TasksController', () => {
@@ -69,14 +69,14 @@ describe('TasksController', () => {
   });
 
   it('should edit a task name', async () => {
-    const editTaskNameDto: EditTaskNameDto = { id: 1, newName: 'Write' };
+    const editTaskNameDto: EditTaskDto = { id: 1, newName: 'Write' };
     const editResult = { acknowledged: true, modifiedCount: 1 };
 
     jest
       .spyOn(tasksService, 'updateOne')
       .mockResolvedValue(editResult as UpdateWriteOpResult);
 
-    expect(await controller.editTaskName(userId, editTaskNameDto)).toEqual(
+    expect(await controller.editTask(userId, editTaskNameDto)).toEqual(
       editResult,
     );
   });
