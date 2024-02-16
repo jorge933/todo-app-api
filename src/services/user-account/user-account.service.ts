@@ -23,12 +23,8 @@ export class UserAccountService extends BaseService<User> {
   ) {
     const [property] = Object.keys(newCredential);
 
-    const value = fieldToUpdateIsUnique
-      ? newCredential[property].toLowerCase()
-      : newCredential[property];
-
     const newCredentialValue = {
-      [property]: value,
+      [property]: newCredential[property],
     };
 
     const existUserWithCredential = await this.findOne(newCredentialValue);

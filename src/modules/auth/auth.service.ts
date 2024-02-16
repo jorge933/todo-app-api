@@ -18,9 +18,6 @@ export class AuthService extends BaseService<User> {
   }
 
   async createUser({ email, username, password }: CreateUserDto) {
-    email = email.toLowerCase();
-    username = username.toLowerCase();
-
     const existUser = await this.findOne({
       $or: [{ email }, { username }],
     });
@@ -52,8 +49,6 @@ export class AuthService extends BaseService<User> {
   }
 
   async login({ login, password }: LoginUserDto) {
-    login = login.toLowerCase();
-
     const user = await this.findOne({
       $or: [{ email: login }, { username: login }],
     });

@@ -1,9 +1,11 @@
+import { Transform } from 'class-transformer';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateUsernameDto {
   @IsString()
   @MaxLength(10)
   @MinLength(3)
+  @Transform(({ value: username }) => username.toLowerCase())
   username: string;
 
   constructor(username: string) {
@@ -13,6 +15,7 @@ export class UpdateUsernameDto {
 
 export class UpdateEmailDto {
   @IsEmail()
+  @Transform(({ value: email }) => email.toLowerCase())
   email: string;
 
   constructor(email: string) {
