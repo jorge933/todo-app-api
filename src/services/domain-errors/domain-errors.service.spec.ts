@@ -47,8 +47,8 @@ describe('DomainErrorsService', () => {
       type: HttpTypeErrors.NO_DOCUMENTS_FIND,
     };
     const error2: Error = {
-      message: 'Este time não existe!',
-      type: HttpTypeErrors.NON_EXISTING_TEAM,
+      message: 'Este usuário não existe!',
+      type: HttpTypeErrors.NO_DOCUMENTS_FIND,
     };
     const status = HttpStatus.NOT_FOUND;
 
@@ -63,7 +63,7 @@ describe('DomainErrorsService', () => {
   it('should clear errors and status together', () => {
     const error: Error = {
       message: 'Este usuário não existe',
-      type: HttpTypeErrors.NON_EXISTING_USER,
+      type: HttpTypeErrors.NO_DOCUMENTS_FIND,
     };
     const status = HttpStatus.NOT_FOUND;
 

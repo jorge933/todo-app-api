@@ -12,13 +12,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
 
-import { TeamsController } from './controllers/teams/teams.controller';
 import { UserAccountController } from './controllers/user-account/user-account.controller';
 import { TasksService } from './services/tasks/tasks.service';
-import { TeamsService } from './services/teams/teams.service';
 import { UserAccountService } from './services/user-account/user-account.service';
-import { ExistTeamValidation } from './decorators/exist-team.decorator';
-import { ExistUserValidation } from './decorators/exist-user.decorator';
 
 @Module({
   imports: [
@@ -27,7 +23,7 @@ import { ExistUserValidation } from './decorators/exist-user.decorator';
     MongooseModule.forRoot(process.env.DB_URI),
     UnitOfWorkModule,
   ],
-  controllers: [TasksController, UserAccountController, TeamsController],
+  controllers: [TasksController, UserAccountController],
   providers: [
     {
       provide: APP_GUARD,
@@ -35,9 +31,6 @@ import { ExistUserValidation } from './decorators/exist-user.decorator';
     },
     TasksService,
     UserAccountService,
-    TeamsService,
-    ExistTeamValidation,
-    ExistUserValidation,
   ],
 })
 export class AppModule {}
