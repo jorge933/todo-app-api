@@ -21,9 +21,14 @@ export class CreateTaskDto {
   @IsEnum(TaskPriority)
   priority: TaskPriority;
 
-  constructor(name: string, priority: TaskPriority) {
+  @IsNumber()
+  @IsOptional()
+  list?: number;
+
+  constructor(name: string, priority: TaskPriority, list: number) {
     this.name = name;
     this.priority = priority;
+    this.list = list;
   }
 }
 

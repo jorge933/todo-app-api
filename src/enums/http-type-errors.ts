@@ -8,4 +8,5 @@ export enum HttpTypeErrors {
   USER_ALREADY_PARTICIPANT = 'userAlreadyParticipant',
   THE_USER_IS_ALREADY_ADMIN = 'userAlreadyAdmin',
   YOU_CANT_PROMOTE_YOURSELF = 'youCantPromoteYourself',
+  NO_EXIST_LIST = 'noExistList',
 }

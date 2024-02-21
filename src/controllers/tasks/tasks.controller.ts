@@ -16,13 +16,9 @@ export class TasksController {
   }
 
   @Post('create')
-  create(@GetUserId() userId: number, @Body() newTask: CreateTaskDto) {
-    const tasks = this.tasksService.create({
-      ...newTask,
-      completed: false,
-      owner: userId,
-    });
-    return tasks;
+  async create(@GetUserId() userId: number, @Body() newTask: CreateTaskDto) {
+    const task = await this.tasksService.createTask(userId, newTask);
+    return task;
   }
 
   @Delete()

@@ -33,6 +33,9 @@ export class Task {
 
   @Prop({ type: Number, ref: 'User', required: true })
   owner: number;
+
+  @Prop({ type: Number, ref: 'List' })
+  list?: number;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
