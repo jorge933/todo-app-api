@@ -25,4 +25,9 @@ export class ListsController {
       { name },
     );
   }
+
+  @Delete('')
+  async deleteList(@GetUserId() userId: number, @Body() { id }: DeleteListDto) {
+    return await this.listsService.delete({ owner: userId, _id: id });
+  }
 }

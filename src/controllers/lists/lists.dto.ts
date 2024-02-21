@@ -23,3 +23,12 @@ export class EditListDto extends CreateListDto {
     this.id = id;
   }
 }
+
+export class DeleteListDto {
+  @IsNumber()
+  id: number;
+
+  constructor(id: number) {
+    this.id = id;
+  }
+}
