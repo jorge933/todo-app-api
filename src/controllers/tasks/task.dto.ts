@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -51,8 +52,13 @@ export class EditTaskDto {
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
 
-  constructor(name?: string, priority?: TaskPriority) {
+  @IsOptional()
+  @IsBoolean()
+  completed: boolean;
+
+  constructor(name?: string, priority?: TaskPriority, completed?: boolean) {
     this.name = name;
     this.priority = priority;
+    this.completed = completed;
   }
 }

@@ -6,17 +6,18 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { convertToLowerCase } from 'src/helpers/to-lower-case';
 
 export class CreateUserDto {
   @IsEmail()
-  @Transform(({ value: email }) => email.toLowerCase())
+  @Transform(convertToLowerCase)
   email: string;
 
   @IsNotEmpty()
   @IsString()
   @MaxLength(10)
   @MinLength(3)
-  @Transform(({ value: username }) => username.toLowerCase())
+  @Transform(convertToLowerCase)
   username: string;
 
   @IsNotEmpty()

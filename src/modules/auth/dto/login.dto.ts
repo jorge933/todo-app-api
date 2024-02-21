@@ -1,10 +1,11 @@
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { convertToLowerCase } from 'src/helpers/to-lower-case';
 
 export class LoginUserDto {
   @IsString()
   @IsNotEmpty()
-  @Transform((login) => login.value.toLowerCase())
+  @Transform(convertToLowerCase)
   login: string;
 
   @IsNotEmpty()

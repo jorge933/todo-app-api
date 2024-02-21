@@ -34,12 +34,19 @@ export class TasksController {
   @Post('edit')
   async editTask(
     @GetUserId() userId: number,
-    @Body() { id, name, priority }: EditTaskDto,
+    @Body() { id, name, priority, completed }: EditTaskDto,
   ) {
-    const taskEdited = await this.tasksService.editTask(userId, id, {
+    const queryFields = {
+      _id: id,
+      owner: userId,
+    };
+    const updateFields = {
       name,
       priority,
-    });
-    return taskEdited;
+      completed,
+    };
+
+    console.log(updateFields);
+    return await this.tasksService.updateOne(queryFields, updateFields);
   }
 }

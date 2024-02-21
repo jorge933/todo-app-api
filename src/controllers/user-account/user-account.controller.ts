@@ -7,11 +7,11 @@ import {
   UpdateUsernameDto,
 } from './update-credentials.dto';
 
-@Controller('user')
+@Controller('user/change')
 export class UserAccountController {
   constructor(private readonly userService: UserAccountService) {}
 
-  @Post('change/username')
+  @Post('username')
   async changeUsername(
     @GetUserId() userId: number,
     @Body() username: UpdateUsernameDto,
@@ -22,7 +22,7 @@ export class UserAccountController {
     );
   }
 
-  @Post('change/email')
+  @Post('email')
   async changeEmail(
     @GetUserId() userId: number,
     @Body() email: UpdateEmailDto,
@@ -30,7 +30,7 @@ export class UserAccountController {
     return await this.userService.updateUserCredential<'email'>(userId, email);
   }
 
-  @Post('change/password')
+  @Post('password')
   async changePassword(
     @GetUserId() userId: number,
     @Body() newPassword: UpdatePasswordDto,
@@ -38,7 +38,7 @@ export class UserAccountController {
     return await this.userService.updatePassword(userId, newPassword);
   }
 
-  @Post('change/photo')
+  @Post('photo')
   async changePhoto(
     @GetUserId() userId: number,
     @Body() photo: { photo: string },
