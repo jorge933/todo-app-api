@@ -11,6 +11,8 @@ import { User, UserSchema } from '../../schemas/user.schema';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { generateSchemaImport } from './functions/generate-schema-import';
 import { UnitOfWorkService } from './unit-of-work.service';
+import { ListsRepository } from 'src/repositories/lists/lists.repository';
+import { List, ListSchema } from 'src/schemas/list.schema';
 
 @Module({
   imports: [
@@ -19,9 +21,12 @@ import { UnitOfWorkService } from './unit-of-work.service';
         id: 'user_counter',
         inc_field: '_id',
       }),
-
       generateSchemaImport(Task.name, TaskSchema, {
         id: 'task_counter',
+        inc_field: '_id',
+      }),
+      generateSchemaImport(List.name, ListSchema, {
+        id: 'list_counter',
         inc_field: '_id',
       }),
     ]),
@@ -31,12 +36,14 @@ import { UnitOfWorkService } from './unit-of-work.service';
     UserRepository,
     TasksRepository,
     DomainErrorsService,
+    ListsRepository,
   ],
   providers: [
     UnitOfWorkService,
     UserRepository,
     TasksRepository,
     DomainErrorsService,
+    ListsRepository,
   ],
 })
 export class UnitOfWorkModule {}

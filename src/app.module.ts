@@ -15,6 +15,8 @@ import { UnitOfWorkModule } from './modules/unit-of-work/unit-of-work.module';
 import { UserAccountController } from './controllers/user-account/user-account.controller';
 import { TasksService } from './services/tasks/tasks.service';
 import { UserAccountService } from './services/user-account/user-account.service';
+import { ListsController } from './controllers/lists/lists.controller';
+import { ListsService } from './services/lists/lists.service';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { UserAccountService } from './services/user-account/user-account.service
     MongooseModule.forRoot(process.env.DB_URI),
     UnitOfWorkModule,
   ],
-  controllers: [TasksController, UserAccountController],
+  controllers: [TasksController, UserAccountController, ListsController],
   providers: [
     {
       provide: APP_GUARD,
@@ -31,6 +33,7 @@ import { UserAccountService } from './services/user-account/user-account.service
     },
     TasksService,
     UserAccountService,
+    ListsService,
   ],
 })
 export class AppModule {}
