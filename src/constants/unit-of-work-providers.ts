@@ -4,7 +4,7 @@ import { UnitOfWorkService } from '../modules/unit-of-work/unit-of-work.service'
 import { DomainErrorsService } from '../services/domain-errors/domain-errors.service';
 
 import { TasksRepository } from '../repositories/tasks/tasks.repository';
-import { UserRepository } from '../repositories/user/user.repository';
+import { UserRepository } from '../repositories/users/users.repository';
 
 import { Task } from '../schemas/task.schema';
 import { User } from '../schemas/user.schema';

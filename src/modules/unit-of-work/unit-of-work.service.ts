@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../repositories/users/users.repository';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 
 @Injectable()

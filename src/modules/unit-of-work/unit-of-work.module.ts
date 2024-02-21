@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { TasksRepository } from '../../repositories/tasks/tasks.repository';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../repositories/users/users.repository';
 
 import { MongooseModule } from '@nestjs/mongoose';
 

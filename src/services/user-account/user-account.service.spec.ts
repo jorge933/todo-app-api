@@ -6,7 +6,7 @@ import { UnitOfWorkService } from '../../modules/unit-of-work/unit-of-work.servi
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { UserAccountService } from './user-account.service';
 import { User, UserDocument } from '../../schemas/user.schema';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../repositories/users/users.repository';
 
 describe('UserAccountService', () => {
   let service: UserAccountService;
