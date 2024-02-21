@@ -14,4 +14,15 @@ export class ListsController {
       owner: userId,
     });
   }
+
+  @Post('edit')
+  async editList(
+    @GetUserId() userId: number,
+    @Body() { name, id }: EditListDto,
+  ) {
+    return await this.listsService.updateOne(
+      { _id: id, owner: userId },
+      { name },
+    );
+  }
 }

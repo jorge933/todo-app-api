@@ -13,3 +13,13 @@ export class CreateListDto {
     this.name = name;
   }
 }
+
+export class EditListDto extends CreateListDto {
+  @IsNumber()
+  id: number;
+
+  constructor(id: number, name: string) {
+    super(name);
+    this.id = id;
+  }
+}
