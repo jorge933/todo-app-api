@@ -45,8 +45,6 @@ export class TasksController {
       priority,
       completed,
     };
-
-    console.log(updateFields);
     return await this.tasksService.updateOne(queryFields, updateFields);
   }
 }
