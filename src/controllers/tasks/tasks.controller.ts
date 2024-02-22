@@ -11,7 +11,7 @@ export class TasksController {
     @GetUserId() userId: number,
     @Query() queryOptions?: { [key: string]: string },
   ) {
-    const tasks = this.tasksService.find({ owner: userId }, queryOptions);
+    const tasks = this.tasksService.getTasks(userId, queryOptions);
     return tasks;
   }
 

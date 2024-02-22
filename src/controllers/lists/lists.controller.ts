@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Post } from '@nestjs/common';
+import { GetUserId } from 'src/modules/auth/decorators/get-user';
 import { ListsService } from 'src/services/lists/lists.service';
 import { CreateListDto, DeleteListDto, EditListDto } from './lists.dto';
-import { GetUserId } from 'src/modules/auth/decorators/get-user';
 
 @Controller('lists')
 export class ListsController {

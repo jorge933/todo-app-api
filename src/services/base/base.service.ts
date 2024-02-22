@@ -132,6 +132,12 @@ export class BaseService<T> {
 
     const filtersTransformed: Filters = entries.reduce(
       (previousValue, [key, value]) => {
+        if (!value)
+          return {
+            ...previousValue,
+            [key]: value,
+          };
+
         const isArray = Array.isArray(value);
 
         const filterValue = isArray
@@ -153,7 +159,7 @@ export class BaseService<T> {
   }
 
   execOperator(value: string, option?: string) {
-    const [operator] = value.split(':');
+    const [operator] = value?.split(':');
     const operatorFunction = this.operators[operator];
 
     return operatorFunction ? operatorFunction(value, option) : value;

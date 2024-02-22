@@ -9,6 +9,11 @@ import { HttpTypeErrors } from 'src/enums/http-type-errors';
 
 @Injectable()
 export class TasksService extends BaseService<Task> {
+  defaultPropertiesValues = {
+    sort: 'priority,desc',
+    list: null,
+  };
+
   constructor(
     tasksRepository: TasksRepository,
     private readonly listsRepository: ListsRepository,
@@ -39,5 +44,19 @@ export class TasksService extends BaseService<Task> {
     }
 
     return await this.create({ ...newTask, owner: userId, completed: false });
+  }
+
+  async getTasks(userId: number, queryOptions?: { [key: string]: string }) {
+    const entries = Object.entries(this.defaultPropertiesValues);
+
+    entries.forEach(([key, value]) => {
+      if (!queryOptions[key]) queryOptions[key] = value;
+    });
+
+    console.log(queryOptions);
+
+    const tasks = await this.find({ owner: userId }, queryOptions);
+
+    return tasks;
   }
 }
