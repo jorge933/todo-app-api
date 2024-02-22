@@ -1,25 +1,35 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { convertToLowerCase } from '../../helpers/to-lower-case';
 
-export class UpdateUsernameDto {
+export class UpdateUserCredentials {
   @IsString()
   @MaxLength(10)
   @MinLength(3)
-  @Transform(({ value: username }) => username.toLowerCase())
+  @IsOptional()
+  @Transform(convertToLowerCase)
   username: string;
 
-  constructor(username: string) {
-    this.username = username;
-  }
-}
-
-export class UpdateEmailDto {
   @IsEmail()
-  @Transform(({ value: email }) => email.toLowerCase())
+  @IsOptional()
+  @Transform(convertToLowerCase)
   email: string;
 
-  constructor(email: string) {
+  @IsOptional()
+  @IsString()
+  photo: string;
+
+  constructor(username: string, email: string, photo: string) {
+    this.username = username;
     this.email = email;
+    this.photo = photo;
   }
 }
 

@@ -1,6 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UpdatePasswordDto } from '../../controllers/user-account/update-credentials.dto';
+import {
+  UpdatePasswordDto,
+  UpdateUserCredentials,
+} from '../../controllers/user-account/update-credentials.dto';
 import { HttpTypeErrors } from '../../enums/http-type-errors';
 import { DomainErrorsService } from '../../services/domain-errors/domain-errors.service';
 import { User } from '../../schemas/user.schema';
@@ -11,37 +14,58 @@ import { BaseService } from '../base/base.service';
 export class UserAccountService extends BaseService<User> {
   domainErrorsService: DomainErrorsService;
 
+  uniqueFields = ['email', 'username'];
+  fieldsThatCanUpdate = [...this.uniqueFields, 'photo'];
+
   constructor({ domainErrorsService, userRepository }: UnitOfWorkService) {
     super(userRepository);
     this.domainErrorsService = domainErrorsService;
   }
 
-  async updateUserCredential<PropToUpdate extends keyof User>(
+  async updateUserCredential(
     userId: number,
-    newCredential: Pick<User, PropToUpdate>,
-    fieldToUpdateIsUnique = true,
+    newCredential: UpdateUserCredentials,
   ) {
-    const [property] = Object.keys(newCredential);
+    const filteredNullValues = Object.entries(newCredential).filter(
+      ([key, value]) => !!value,
+    );
+    const [[key, value]] = filteredNullValues;
 
-    const newCredentialValue = {
-      [property]: newCredential[property],
-    };
+    const canUpdate = this.fieldsThatCanUpdate.includes(key);
 
-    const existUserWithCredential = await this.findOne(newCredentialValue);
-
-    if (existUserWithCredential && fieldToUpdateIsUnique) {
+    if (!canUpdate) {
       this.domainErrorsService.addError(
         {
-          message: `Este ${property} já foi registrado!`,
-          type: HttpTypeErrors.ALREADY_BEEN_REGISTERED,
+          message: 'Você não pode atualizar esta propriedade!',
+          type: HttpTypeErrors.CANNOT_PERFORM_THIS_ACTION,
         },
         HttpStatus.UNAUTHORIZED,
       );
       return;
     }
 
-    this.updateOne({ _id: userId }, { ...newCredentialValue });
-    return newCredentialValue;
+    const isUnique = this.uniqueFields.includes(key);
+
+    if (isUnique) {
+      const existRegisters = await this.findOne({ [key]: value });
+
+      if (existRegisters) {
+        this.domainErrorsService.addError(
+          {
+            message: `Este ${key} já foi registrado!`,
+            type: HttpTypeErrors.ALREADY_BEEN_REGISTERED,
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+        return;
+      }
+    }
+
+    await this.updateOne({ _id: userId }, { [key]: value });
+
+    return {
+      [key]: value,
+    };
   }
 
   async updatePassword(

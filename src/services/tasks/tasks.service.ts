@@ -35,7 +35,7 @@ export class TasksService extends BaseService<Task> {
         this.domainErrorsService.addError(
           {
             message: 'Você não possui uma lista com o id especificado!',
-            type: HttpTypeErrors.NO_EXIST_LIST,
+            type: HttpTypeErrors.NO_EXISTING_LIST,
           },
           HttpStatus.FORBIDDEN,
         );
@@ -52,8 +52,6 @@ export class TasksService extends BaseService<Task> {
     entries.forEach(([key, value]) => {
       if (!queryOptions[key]) queryOptions[key] = value;
     });
-
-    console.log(queryOptions);
 
     const tasks = await this.find({ owner: userId }, queryOptions);
 

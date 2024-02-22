@@ -2,33 +2,13 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { GetUserId } from '../../modules/auth/decorators/get-user';
 import { UserAccountService } from '../../services/user-account/user-account.service';
 import {
-  UpdateEmailDto,
   UpdatePasswordDto,
-  UpdateUsernameDto,
+  UpdateUserCredentials,
 } from './update-credentials.dto';
 
 @Controller('user/change')
 export class UserAccountController {
   constructor(private readonly userService: UserAccountService) {}
-
-  @Post('username')
-  async changeUsername(
-    @GetUserId() userId: number,
-    @Body() username: UpdateUsernameDto,
-  ) {
-    return await this.userService.updateUserCredential<'username'>(
-      userId,
-      username,
-    );
-  }
-
-  @Post('email')
-  async changeEmail(
-    @GetUserId() userId: number,
-    @Body() email: UpdateEmailDto,
-  ) {
-    return await this.userService.updateUserCredential<'email'>(userId, email);
-  }
 
   @Post('password')
   async changePassword(
@@ -38,15 +18,11 @@ export class UserAccountController {
     return await this.userService.updatePassword(userId, newPassword);
   }
 
-  @Post('photo')
-  async changePhoto(
+  @Post('')
+  async changeUsername(
     @GetUserId() userId: number,
-    @Body() photo: { photo: string },
+    @Body() field: UpdateUserCredentials,
   ) {
-    return await this.userService.updateUserCredential<'photo'>(
-      userId,
-      photo,
-      false,
-    );
+    return await this.userService.updateUserCredential(userId, field);
   }
 }
